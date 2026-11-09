@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OddsNotLuck</title>
+<meta name="description" content="Track casino sessions and your bankroll, and see what the odds say you should have won or lost.">
+<meta name="theme-color" content="#120E1E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OddsNotLuck">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,600;1,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F0F7;--card:#fff;--tx:#1A1430;--mut:#615A78;--bd:#DDD8EA;--ok:#0F8A5F;--no:#C2412D;--wa:#B06A00;--ac:#1A1430;--amb:#6A2EE8;--chip:#F3F0FA;--cd:"Barlow Condensed","Arial Narrow","Helvetica Neue",sans-serif;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120E1E;--card:#1C1630;--tx:#EEEAF7;--mut:#9A90B5;--bd:#2F2550;--ok:#3DDC97;--no:#FF7A66;--wa:#FFC24D;--ac:#A66BFF;--amb:#A66BFF;--chip:#251D3D;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#120E1E;--card:#1C1630;--tx:#EEEAF7;--mut:#9A90B5;--bd:#2F2550;--ok:#3DDC97;--no:#FF7A66;--wa:#FFC24D;--ac:#A66BFF;--amb:#A66BFF;--chip:#251D3D;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+main{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+.brand{display:flex;align-items:center;gap:10px;margin:6px 0 18px}
+.mk{width:42px;height:42px;border-radius:11px;background:#1A1430;box-shadow:0 0 0 1px #A66BFF;display:flex;align-items:center;justify-content:center;flex:none;margin-left:1px;font:italic 800 25px/1 var(--cd);color:#A66BFF;letter-spacing:-.3px}
+.wm{font:italic 800 37px/1 var(--cd);letter-spacing:-.3px;margin:0}
+.wm .a,.tag .a{color:var(--amb)}
+.wm .n{font-weight:600;color:var(--mut);opacity:.55;margin:0 .5px}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:4px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:4px;margin:0 0 14px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.tabs button{flex:1;border:0;background:none;border-radius:10px;padding:10px 6px;font:700 16px/1 var(--cd);letter-spacing:.5px;color:var(--mut);cursor:pointer}
+.tabs button.on{background:var(--ac);color:var(--card)}
+.tag{font:italic 600 18px/1.2 var(--cd);letter-spacing:.3px;margin:0 0 16px}
+.tag .a{font-weight:800}.tag .n{color:var(--mut);opacity:.6}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px}
+.card b{display:block;font:800 28px/1 var(--cd);font-variant-numeric:tabular-nums}
+.card>span{display:block;margin-top:6px;font-size:12px;color:var(--mut)}
+h2{font:800 21px/1.1 var(--cd);letter-spacing:.3px;margin:28px 0 10px}
+.rh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:28px 0 10px}.rh h2{margin:0}
+.sub{font-size:13px;color:var(--mut);margin:-4px 0 10px}
+.gl{background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.r{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--bd)}
+.r:last-child{border-bottom:0}
+.r .l{font-size:14px}.r .l small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.r b{font:700 18px/1 var(--cd);font-variant-numeric:tabular-nums;text-align:right}
+.gh{padding:12px 14px 4px;font:800 18px/1 var(--cd);letter-spacing:.3px}
+.gn{padding:0 14px 8px;font-size:12px;color:var(--mut);border-bottom:1px solid var(--bd)}
+.chip{display:inline-block;min-width:34px;text-align:center;padding:5px 8px;border-radius:7px;background:var(--chip);font:700 14px/1 var(--cd);letter-spacing:.3px;font-variant-numeric:tabular-nums}
+.ok{color:var(--ok)}.no{color:var(--no)}.wa{color:var(--wa)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:11.5px;color:var(--mut);font-weight:600}
+tr:last-child td{border-bottom:0}
+td:first-child{font:700 16px/1 var(--cd);letter-spacing:.3px}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:14px}
+details{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-top:14px}
+summary{cursor:pointer;font:700 17px/1.2 var(--cd);letter-spacing:.4px}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.f label{font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:3px}
+.f .w{grid-column:1/-1}
+.f .ck{flex-direction:row;align-items:center;gap:8px;font-size:14px;color:var(--tx)}
+.f .ck input{width:auto}
+input,select,button{font:inherit;color:var(--tx)}
+input,select{width:100%;background:var(--chip);border:1px solid var(--bd);border-radius:10px;padding:8px 10px}
+.p{margin-top:10px;background:var(--ac);color:var(--card);border:1px solid var(--ac);border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
+.p2{margin-top:10px;background:none;color:var(--amb);border:1px solid var(--amb);border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
+.lnk{border:0;background:none;color:var(--mut);font-size:12px;text-decoration:underline;padding:0 0 0 8px;cursor:pointer}
+.note{font-size:12px;color:var(--mut);margin:8px 2px 0}.note:empty{display:none}
+.flag{font-size:11px;font-weight:600;color:var(--no);margin-left:6px}
+.jp{font-size:11px;font-weight:600;color:var(--amb);margin-left:6px}
+.lv{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:8px}
+.lv.on{border-color:var(--amb)}
+.lvh{font:700 17px/1.2 var(--cd);letter-spacing:.4px}
+.lvh small{display:block;font:13px/1.4 system-ui,-apple-system,sans-serif;color:var(--mut);letter-spacing:0;margin-top:2px}
+.clk{font:italic 800 56px/1 var(--cd);color:var(--amb);font-variant-numeric:tabular-nums;margin:10px 0 2px;letter-spacing:.5px}
+.lvb{display:flex;gap:8px;flex-wrap:wrap}
+.lvb button{flex:1}
+.warn{margin-top:10px;font-size:13px;color:var(--wa)}
+.seg{display:inline-flex;background:var(--chip);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.chart{display:block;width:100%;height:110px;margin-top:10px}
+.help{font-size:12.5px;color:var(--mut);margin:28px 2px 0;line-height:1.5}
+.help a{color:var(--amb)}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--amb);outline-offset:2px}
+:root:root:root{--bg:#120E1E;--card:#1C1630;--tx:#EEEAF7;--mut:#9A90B5;--bd:#2F2550;--ok:#3DDC97;--no:#FF7A66;--wa:#FFC24D;--ac:#A66BFF;--amb:#A66BFF;--chip:#251D3D;color-scheme:dark}
+.wm .n,.tag .n{color:#B6ACD0;opacity:1}
+.bkr{display:block}
+.bkr.g{display:grid;grid-template-columns:1fr 44%;align-items:center;gap:12px}
+.bkr .chart{height:58px;margin:0}
+.bn{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:center;align-items:flex-end;background:var(--card);border-top:1px solid var(--bd);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 18px rgba(0,0,0,.25)}
+.bn button{flex:1;max-width:120px;border:0;background:none;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:4px;font:700 12.5px/1 var(--cd);letter-spacing:.4px;padding:6px 0;cursor:pointer}
+.bn button svg{width:22px;height:22px}
+.bn button.on{color:var(--amb)}
+.bn .fab{flex:none;width:64px;height:64px;margin:-28px 8px 0;padding:0;border-radius:50%;background:var(--ac);color:var(--card);justify-content:center;font:italic 800 17px/1 var(--cd);border:4px solid var(--bg);box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.bn .fab.run{background:var(--card);color:var(--amb);border-color:var(--amb);font-size:18px;font-variant-numeric:tabular-nums}
+main{padding-bottom:120px}
+#setf{scroll-margin-top:20px}
+@keyframes pl{0%{box-shadow:0 0 0 0 var(--amb)}100%{box-shadow:0 0 0 14px transparent}}
+.lv.pulse{animation:pl .9s ease-out 1}
+.bn .fab.run{font-size:15px;letter-spacing:0}
+.bn .fab.pz{opacity:.65}
+h2,.rh h2{font:italic 800 25px/1 var(--cd);letter-spacing:.3px}
+h2::after{content:"";display:block;width:30px;height:3px;border-radius:2px;background:var(--amb);margin-top:7px}
+h2{margin:30px 0 12px}
+.rh{margin:30px 0 12px;align-items:flex-end}
+.rh h2{margin:0}
+h2.mp{font-size:25px;margin:30px 0 12px}
+#mc{grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+#mc .card{padding:8px 9px;border-radius:12px}
+#mc .card b{font-size:19px}
+#mc .card>span{font-size:10.5px;margin-top:4px}
+#mc .card>span .no{display:block}
+th{font:700 10.5px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:.5px;text-transform:uppercase;padding:11px 10px 9px}
+td{padding:9px 10px}
+.r{padding:10px 14px}
+.lv{padding:12px 14px}
+.lvh small{font-size:12px}
+.seg button{padding:5px 10px}
+.ldr{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 4px}
+.ldr:empty{display:none}
+.lc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:7px 10px;text-align:left;cursor:pointer;color:var(--tx);font:inherit;min-width:0}
+.lc span{display:block;font-size:10.5px;color:var(--mut)}
+.lc b{display:block;font:800 17px/1.15 var(--cd);letter-spacing:.3px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc em{display:block;font:700 14px/1 var(--cd);font-style:normal;margin-top:3px;color:var(--amb)}
+.lc em.ok{color:var(--ok)}.lc em.no{color:var(--no)}
+#resh{scroll-margin-top:16px}
+#me .rh[style]{margin-top:24px!important}
+.lc em:empty{display:none}
+#mc{grid-template-columns:repeat(3,1fr)!important}
+#top3{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;background:none;border:0;overflow:visible}
+.mpb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px 9px;text-align:left;cursor:pointer;color:var(--tx);font:inherit;min-width:0}
+.mpb b{display:block;font:800 16px/1.15 var(--cd);letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpb span{display:block;font-size:10.5px;color:var(--mut);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#resh~.wrap{overflow-x:hidden}
+#resh~.wrap table{table-layout:fixed}
+#bh th:nth-child(2){width:72px}#bh th:nth-child(3){width:72px}#bh th:nth-child(4){width:62px}
+#bg td{white-space:nowrap}
+#bg td:first-child{white-space:normal}
+.bn2{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ss{display:block;font:500 11px/1 system-ui,-apple-system,sans-serif;color:var(--mut);margin-top:4px;letter-spacing:0}
+#bg .ed{font-size:12.5px;color:var(--mut)}
+#live{margin-top:0!important}
+.lvt{margin:28px 0 12px}
+.lv{padding:14px 16px;border-radius:14px;margin:0}
+.lv .f{margin-top:0;gap:10px}
+.lv .f label{font-size:11px;letter-spacing:.3px;text-transform:uppercase;font-weight:600}
+.lv .f select,.lv .f input{padding:10px 12px;font-size:15px}
+.lvhint{margin:10px 0 0;font-size:12px;color:var(--mut)}
+.lv.on .lvh{font:italic 800 18px/1.1 var(--cd);letter-spacing:.3px;color:var(--amb)}
+.lv.on .lvh small{font:500 13px/1.3 system-ui,-apple-system,sans-serif;color:var(--mut);font-style:normal;letter-spacing:0;margin-top:3px}
+.lv.on .clk{font-size:60px;margin:10px 0 12px}
+.lv.on .lvb{gap:8px}
+.lv.on .lvb button{margin-top:0;padding:11px 12px}
+.lv.on .lnk{display:block;margin:12px auto 0!important;padding:0!important}
+.lv.on .warn{margin-top:10px}
+#bh th:nth-child(2){width:68px}#bh th:nth-child(3){width:70px}#bh th:nth-child(4){width:72px}
+#bg .ed{font-size:12px}
+.ldr{background:var(--card);border:1px solid var(--bd);border-radius:14px;gap:0;overflow:hidden}
+.lc{border:0;border-radius:0;background:none;border-left:1px solid var(--bd);padding:10px 12px}
+.lc:first-child{border-left:0}
+.lc:active,.mpb:active{background:var(--chip)}
+#bk{border-radius:14px 14px 0 0}
+#mc{background:var(--card);border:1px solid var(--bd);border-top:1px solid color-mix(in srgb,var(--bd) 70%,transparent);border-radius:0 0 14px 14px;margin-top:-1px!important;padding:10px 0;gap:0!important}
+#mc .card{background:none;border:0;border-left:1px solid var(--bd);border-radius:0;padding:2px 14px}
+#mc .card:first-child{border-left:0}
+#top3{background:var(--card);border:1px solid var(--bd);border-radius:14px;gap:0;overflow:hidden}
+.mpb{border:0;border-radius:0;background:none;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:11px 14px}
+.mpb:nth-child(2n){border-right:0}
+.mpb:nth-child(n+3){border-bottom:0}
+input,select,textarea,.lv .f select,.lv .f input,#sp,.ctl #sp{font-size:16px!important}
+.bkb{display:flex;gap:6px}.bkb .p2{margin:0;padding:7px 12px}
+#mcn{margin:8px 2px 0}
+.calc{margin:12px 0 0;font-size:15px;line-height:1.45;color:var(--tx)}
+.wel{margin:0 0 14px;border-color:var(--amb)}
+.welh{font:italic 800 22px/1.1 var(--cd);letter-spacing:.3px;color:var(--amb)}
+.wel p{margin:8px 0 12px;font-size:14px;line-height:1.5;color:var(--mut)}
+.wel .lvb .p,.wel .lvb .p2{margin-top:0}
+.f .note.w{grid-column:1/-1;margin:0}
+#auth{max-width:420px;margin:0 auto;padding:40px 18px 60px}
+#auth .lv{margin:0}
+#auth .p{width:100%}
+#auth .p:disabled{opacity:.6}
+#auth .alt{display:flex;justify-content:space-between;margin-top:14px}
+#auth .alt .lnk{padding:0}
+#auth .welh{margin-bottom:6px}
+#auth .sub{margin:0 0 4px}
+body.out main,body.out .bn{display:none}
+body:not(.out) #auth{display:none}
+.acct{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:12.5px;color:var(--mut)}
+.acct .lnk{padding:0}
+.admb{width:100%;margin-top:14px}
+.back{border:0;background:none;color:var(--amb);font:italic 800 19px/1 var(--cd);letter-spacing:.3px;padding:6px 0;margin-top:14px;cursor:pointer}
+.dh{font:italic 800 46px/1 var(--cd);letter-spacing:.2px;margin:14px 0 8px}
+.adst{grid-template-columns:1fr 1fr;margin:16px 0 10px}
+.adst .lc{cursor:default;padding:14px 16px}
+.adst .lc b{font:800 34px/1 var(--cd);font-variant-numeric:tabular-nums;margin:0}
+.adst .lc span{font-size:13px;margin-top:6px}
+.adst .lc:nth-child(odd){border-left:0}
+.adst .lc:nth-child(n+3){border-top:1px solid var(--bd)}
+.suc{padding:14px 16px}
+.suh{display:flex;align-items:baseline;gap:8px}.suh b{font:800 19px/1 var(--cd)}.suh span{font-size:13px;color:var(--mut)}
+.sbars{display:flex;align-items:flex-end;gap:3px;height:84px;margin:14px 0 6px;border-bottom:1px dashed var(--bd)}
+.sbars i{flex:1;background:var(--amb);border-radius:3px 3px 0 0;min-width:0}
+.sax{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+.adf{display:flex;flex-wrap:wrap;margin-bottom:8px}
+#adq{margin-bottom:10px}
+.ur{padding:13px 16px;border-bottom:1px solid var(--bd)}
+.ur:last-child{border-bottom:0}
+.ur .em{font-weight:650;font-size:15.5px;overflow-wrap:anywhere}
+.ur .dt{font-size:12.5px;color:var(--mut);margin-top:3px}
+.ur .ct{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--mut);margin-top:8px}
+.ur .ct b{font:800 17px/1 var(--cd);color:var(--tx);margin-right:3px}
+.ur .ac{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ur .ac .p2{margin:0;padding:7px 12px;font-size:13px}
+.ur .ac .del{margin-left:auto;border:0;background:none;color:var(--no);text-decoration:underline;font-size:13px;cursor:pointer;padding:6px 0}
+.tg{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.3px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:2px;background:var(--chip)}
+.tg.a{color:var(--amb)}.tg.w{color:var(--wa)}.tg.x{color:var(--no)}.tg.y{color:var(--mut)}
+.agec{margin-bottom:10px}.agec .p{width:100%}
+.rbtn{display:flex;gap:8px}.rbtn button{flex:1}
+#pdfb:disabled{opacity:.6}
+#splash{display:none}
+body.boot #auth,body.boot main,body.boot .bn{display:none}
+body.boot #splash{display:flex;min-height:100vh;min-height:100dvh;align-items:center;justify-content:center}
+body.boot #splash .mk{width:64px;height:64px;border-radius:16px;font-size:36px;animation:sp 1.4s ease-in-out infinite}
+@keyframes sp{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){body.boot #splash .mk{animation:none}}
+</style>
+</head>
+<body class="out boot">
+<div id="splash" aria-label="Loading"><span class="mk" aria-hidden="true">21</span></div>
+<section id="auth" aria-label="Sign in">
+  <div class="brand"><span class="mk" aria-hidden="true">21</span><h1 class="wm"><span class="a">Odds</span><span class="n">Not</span>Luck</h1></div>
+  <p class="tag">Results based on <span class="a">odds</span> <span class="n">not</span> luck</p>
+  <div class="lv">
+    <div class="welh" id="ah">Sign in</div>
+    <p class="sub" id="as">Your sessions are private to your account.</p>
+    <div class="f">
+      <label class="w" id="aemw">Email<input id="aem" type="email" autocomplete="email" inputmode="email"></label>
+      <label class="w" id="apww">Password<input id="apw" type="password" autocomplete="current-password"></label>
+      <label class="w ck" id="agew" hidden><input id="age" type="checkbox"> I’m 21 or older</label>
+    </div>
+    <button class="p" id="ago" data-au="go">Sign in</button>
+    <p class="note" id="amsg2"></p>
+    <div class="alt"><button class="lnk" data-au="mode" id="amode">Create an account</button><button class="lnk" data-au="forgot" id="afg">Forgot password</button></div>
+  </div>
+  <p class="help">For tracking and entertainment only. Not gambling, financial or tax advice. 21+ only.<br><br>Gambling should stay fun. If it isn’t, call or text 1-800-GAMBLER, or visit <a href="https://www.ncpgambling.org" target="_blank" rel="noopener">ncpgambling.org</a>.</p>
+</section>
+<main>
+<div class="brand"><span class="mk" aria-hidden="true">21</span><h1 class="wm"><span class="a">Odds</span><span class="n">Not</span>Luck</h1></div>
+
+<p class="tag">Results based on <span class="a">odds</span> <span class="n">not</span> luck</p>
+<div class="ldr" id="ldr"></div>
+<datalist id="vn"></datalist>
+
+<section id="me">
+  <div id="agec" class="lv agec" hidden><div class="welh">Confirm you’re 21 or older</div><p class="sub">OddsNotLuck is for adults 21 and over.</p><button class="p" data-au="age">I’m 21 or older</button></div>
+  <div id="wel" class="lv wel" hidden><div class="welh">Results based on odds, not luck</div><p>Every casino game has a house edge. Log a session with your average bet and OddsNotLuck shows what the odds say you should have lost, what really happened, and how much was luck.</p><div class="lvb"><button class="p" data-a2="fab">Start a live session</button><button class="p2" data-t="odds">See the odds</button></div><button class="lnk" data-a2="wx" style="margin-top:10px;padding:0">Hide this</button></div>
+  <p class="note" id="msg"></p>
+  <div class="rh" style="margin-top:0"><h2>Bankroll</h2><div class="bkb"><button class="p2" data-a="outm">Take out</button><button class="p2" data-a="addm">+ Add money</button></div></div>
+  <div id="outf" class="lv" hidden><div class="f" style="margin-top:0"><label class="w">Amount taken out ($)<input id="om" type="text" inputmode="decimal" placeholder="200"></label></div><button class="p" data-a="outsave" style="width:100%">Take out of bankroll</button><p class="note" id="omsg"></p></div>
+  <div id="addf" class="lv" hidden><div class="f" style="margin-top:0"><label class="w">Amount ($)<input id="am" type="text" inputmode="decimal" placeholder="500"></label></div><button class="p" data-a="addsave" style="width:100%">Add to bankroll</button><p class="note" id="amsg"></p></div>
+  <div class="gl" id="bk"></div>
+  <div class="cards" id="mc"></div>
+  <p class="note" id="mcn"></p>
+  <div id="top3w" hidden><h2 class="mp">Most played</h2><div class="gl" id="top3"></div></div>
+  <div id="live" style="margin-top:16px"></div>
+  <details id="logf"><summary>Log a session</summary>
+    <div class="f">
+      <label>Game<select id="fg"></select></label>
+      <label>Date<input id="fd" type="date"></label>
+      <label class="w">Venue<input id="fv" list="vn" placeholder="Pick a casino or type your own"></label>
+      <label data-k="pc">Stakes<input id="fst" type="text" placeholder="1/3"></label>
+      <label data-k="mc">Machine<input id="fm" type="text" placeholder="Double Diamond"></label>
+      <label data-k="mc">Denomination<input id="fdn" type="text" placeholder="25¢"></label>
+      <label data-k="pt">Entry fee ($)<input id="fe" type="text" inputmode="decimal" placeholder="150"></label>
+      <label data-k="pt">Rebuys and add-ons ($)<input id="fr" type="text" inputmode="decimal" placeholder="0"></label>
+      <label data-k="pt">Winnings ($)<input id="fw" type="text" inputmode="decimal" placeholder="0"></label>
+      <label data-k="pc tb mc sb"><span id="lb1">Buy-in ($)</span><input id="fb" type="text" inputmode="decimal" placeholder="300"></label>
+      <label data-k="pc tb mc sb"><span id="lb2">Cash-out ($)</span><input id="fo" type="text" inputmode="decimal" placeholder="420"></label>
+      <label data-k="tb mc"><span id="lb3">Average bet ($)</span><input id="fa" type="text" inputmode="decimal" placeholder="25"></label>
+      <label data-k="tb mc"><span id="lb4">Hands per hour</span><input id="fra" type="text" inputmode="numeric" placeholder="70"></label>
+      <label data-bj="1">Side bet<select id="fsd"><option value="">None</option><option>21+3</option><option>Lucky Ladies</option></select></label>
+      <label data-bj="1">Side bet per hand ($)<input id="fsa" type="text" inputmode="decimal" placeholder="5"></label>
+      <label>Tips ($)<input id="ft" type="text" inputmode="decimal" placeholder="0"></label>
+      <label>Comps and free play ($)<input id="fc" type="text" inputmode="decimal" placeholder="0"></label>
+      <p class="note w" data-k="sb">For bet-by-bet tracking with closing line value, use LinesNotScores.</p>
+      <label>Hours played<input id="fh" type="text" inputmode="decimal" placeholder="2.5"></label>
+      <label class="w ck"><input id="fj" type="checkbox"> Jackpot with a W-2G</label>
+      <label data-j="1">W-2G amount ($)<input id="fwa" type="text" inputmode="decimal"></label>
+      <label data-j="1">Tax withheld ($)<input id="fww" type="text" inputmode="decimal" placeholder="0"></label>
+    </div>
+    <button class="p" data-a="save">Save session</button><p class="note" id="fm2"></p>
+  </details>
+  
+  <div class="rh" id="resh"><h2>Results</h2><div class="seg" id="bseg"><button data-b="game" class="on">Game</button><button data-b="venue">Venue</button><button data-b="day">Day</button></div></div>
+  <div class="wrap"><table><thead id="bh"></thead><tbody id="bg"></tbody></table></div>
+  <h2>Sessions</h2>
+  <div class="gl" id="sl"></div>
+  <details id="setf"><summary>Settings: bankroll and limits</summary>
+    <p class="sub" style="margin:8px 0 0">Your starting bankroll. Limits are optional; sessions past a limit get flagged. Your skill level sets the house edge used for blackjack, Spanish 21 and video poker.</p>
+    <div class="f">
+      <label class="w">Starting bankroll ($)<input id="sst" type="text" inputmode="decimal"></label>
+      <label>Loss limit per session ($)<input id="lb" type="text" inputmode="decimal" placeholder="200"></label>
+      <label>Time limit (hours)<input id="lh" type="text" inputmode="decimal" placeholder="3"></label>
+      <label class="w">How you play blackjack and video poker<select id="ssk"><option value="perfect">Perfect basic strategy</option><option value="good">Good, a few mistakes</option><option value="casual">Casual, by feel</option></select></label>
+    </div>
+    <button class="p" data-a="set">Save settings</button><p class="note" id="sm"></p>
+    <div class="acct"><span id="aemail"></span><button class="lnk" data-au="out">Sign out</button></div>
+  </details>
+  <button class="p2 admb" id="admb" data-au="admopen" hidden>Admin dashboard <span aria-hidden="true">›</span></button>
+</section>
+
+<section id="adm" hidden>
+  <button class="back" data-au="admback">‹ Settings</button>
+  <h1 class="dh">Dashboard</h1>
+  <p class="sub">Accounts and activity. Sessions and money stay private to each user; you see counts only.</p>
+  <div class="ldr adst" id="ads"></div>
+  <div class="gl suc"><div class="suh"><b>Sign-ups</b><span>last 30 days</span></div><div class="sbars" id="adc"></div><div class="sax"><span id="adc0"></span><span>Today</span></div></div>
+  <div class="rh"><h2>Users</h2><button class="lnk" data-au="admr">Refresh</button></div>
+  <div class="seg adf" id="adf"><button data-af="all" class="on">All</button><button data-af="a7">Active 7d</button><button data-af="n7">New 7d</button><button data-af="unc">Unconfirmed</button><button data-af="dis">Disabled</button><button data-af="adm">Admins</button></div>
+  <input id="adq" type="search" placeholder="Search by email" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <div class="gl" id="adl"></div>
+  <p class="note" id="adt"></p>
+</section>
+
+<section id="rep" hidden>
+  <div class="rh" style="margin-top:6px"><h2>Yearly report</h2><select id="yr" style="width:auto"></select></div>
+  <div class="gl" id="rp"></div>
+  <p class="sub" style="margin-top:10px" id="rnote"></p>
+  <div class="rbtn"><button class="p" data-a="pdf" id="pdfb">Download PDF</button><button class="p2" data-a="csv" id="csvb" hidden>Download CSV</button></div><p class="note" id="cm"></p>
+  <h2>W-2G jackpots</h2>
+  <div class="gl" id="wl"></div>
+</section>
+
+<section id="odds" hidden>
+  <h2 style="margin-top:6px">What it costs to play</h2>
+  <div class="lv"><div class="f" style="margin-top:0"><label class="w">Game<select id="cg"></select></label><label>Average bet ($)<input id="cb" type="text" inputmode="decimal" value="25"></label><label>Hours<input id="ch" type="text" inputmode="decimal" value="2"></label><label class="w">Hands or spins per hour (optional)<input id="cr" type="text" inputmode="numeric"></label></div><p class="calc" id="cout"></p></div>
+  <h2>Best bets in the house</h2>
+  <div class="gl" id="best"></div>
+  <h2>Worst bets</h2>
+  <div class="gl" id="worst"></div>
+  <h2>Every game</h2>
+  <p class="sub">House edge with typical rules and correct play. Lower is better. Check each table’s rules. Figures from the Wizard of Odds and published game math; side bets and machines vary by pay table.</p>
+  <div id="all"></div>
+</section>
+<p class="help">For tracking and entertainment only. Not gambling, financial or tax advice. 21+ only. House edges assume typical rules and correct play; check each table’s rules. Your sessions are private to your account.<br><br>Gambling should stay fun. If it isn’t, call or text 1-800-GAMBLER, or visit <a href="https://www.ncpgambling.org" target="_blank" rel="noopener">ncpgambling.org</a>.</p>
+</main>
+<nav class="bn" aria-label="Sections"><button data-t="me" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Sessions</button><button data-t="rep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 19v-8M12 19V5M18 19v-6"/></svg>Report</button><button class="fab" id="fab" data-a2="fab" aria-label="Live session"><span id="fabt">Start</span></button><button data-t="odds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.2"/><circle cx="17" cy="17" r="2.2"/></svg>Odds</button><button data-nv="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button></nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+Element.prototype.scrollIntoView=function(o){var r=this.getBoundingClientRect(),b=(o&&o.block)||"start",y=window.scrollY+r.top-(b==="center"?(innerHeight-r.height)/2:16);window.scrollTo({top:Math.max(0,y),behavior:"smooth"})};
+var $=function(i){return document.getElementById(i)};
+var GAMES=[["Poker cash","Poker","pc"],["Poker tournament","Poker","pt"],["Blackjack","Table","tb"],["Craps","Table","tb"],["Roulette","Table","tb"],["Baccarat","Table","tb"],["Three Card Poker","Table","tb"],["Ultimate Texas Hold'em","Table","tb"],["Mississippi Stud","Table","tb"],["Pai Gow Poker","Table","tb"],["Let It Ride","Table","tb"],["Spanish 21","Table","tb"],["Big Six wheel","Table","tb"],["Other table game","Table","tb"],["Slots","Machines","mc"],["Video poker","Machines","mc"],["Keno","Machines","mc"],["Sports betting","Sports","sb"]];
+var CATL={Poker:"Poker",Table:"Table games",Machines:"Slots and video poker"};
+var GD={"Blackjack":{e:[0.5,1,2],r:70,u:"hands"},"Spanish 21":{e:[0.8,1.5,2.5],r:60,u:"hands"},"Craps":{e:1.41,r:30,u:"decisions"},"Roulette":{e:5.26,r:38,u:"spins"},"Baccarat":{e:1.06,r:70,u:"hands"},"Three Card Poker":{e:3.37,r:50,u:"hands"},"Ultimate Texas Hold'em":{e:2.19,r:30,u:"hands"},"Mississippi Stud":{e:4.91,r:30,u:"hands"},"Pai Gow Poker":{e:2.72,r:30,u:"hands"},"Let It Ride":{e:3.51,r:30,u:"hands"},"Big Six wheel":{e:11.11,r:40,u:"spins"},"Other table game":{e:null},"Slots":{e:8,r:600,u:"spins",est:1},"Video poker":{e:[0.5,1.5,3],r:600,u:"hands"},"Keno":{e:27,r:300,u:"games",est:1},"Sports betting":{e:4.55,wag:1}};
+var SIDE={"21+3":6,"Lucky Ladies":17.6};
+function edgeOf(g){var d=GD[g];if(!d||d.e==null)return null;var sk=SET.skill==="perfect"?0:SET.skill==="casual"?2:1;return Array.isArray(d.e)?d.e[sk]:d.e}
+function edgeLbl(g){if(g==="Poker cash")return"Rake";if(g==="Poker tournament")return"Fee";var e=edgeOf(g);return e==null?"\u2014":((GD[g]||{}).est?"~":"")+e+"%"}
+function theo(s){var d=GD[s.game]||{},e=edgeOf(s.game);if(e==null)return null;if(d.wag)return nz(s.inn)*e/100;var b=num(s.avg);if(b===null||!(nz(s.hrs)>0))return null;var r=num(s.rate)||d.r,h=nz(s.hrs),t=b*r*h*e/100;if(s.side&&SIDE[s.side]&&num(s.sideAmt))t+=num(s.sideAmt)*r*h*SIDE[s.side]/100;return t}
+function luck(s){var t=theo(s);return t==null?null:net(s)+t}
+function perHr(g,b){var d=GD[g]||{},e=edgeOf(g);if(e==null||d.wag||!(b>0))return null;return b*d.r*e/100}
+var VEGAS=["Aria","Bellagio","Caesars Palace","Circa","Cosmopolitan","Durango","El Cortez","Encore","Excalibur","Flamingo","Fontainebleau","Four Queens","Golden Gate","Golden Nugget","Gold Coast","Green Valley Ranch","Horseshoe","Luxor","M Resort","Mandalay Bay","MGM Grand","New York-New York","Orleans","Palace Station","Palazzo","Paris","Planet Hollywood","Plaza","Red Rock","Resorts World","Rio","Sahara","Sam’s Town","Santa Fe Station","South Point","Sunset Station","Boulder Station","The D","Treasure Island","Venetian","Wynn","Online"];
+var ODDS=[
+ {g:"Blackjack",n:"6 decks, dealer stands on soft 17, basic strategy",b:[["3:2 blackjack payout",0.5],["6:5 blackjack payout",1.9],["21+3 side bet",6,"3\u20139%"],["Insurance",7.4],["Lucky Ladies side bet",17.6,"6\u201330%"]]},
+ {g:"Spanish 21",n:"6 to 8 decks, Spanish 21 basic strategy",b:[["Dealer stands on soft 17",0.37],["Dealer hits soft 17",0.78]]},
+ {g:"Ultimate Texas Hold'em",n:"Per ante, optimal strategy",b:[["Ante and blind",2.19]]},
+ {g:"Pai Gow Poker",n:"Dealer banks, 5% commission, house way",b:[["Player hand",2.72]]},
+ {g:"Let It Ride",n:"Standard pay table, optimal strategy",b:[["Base game",3.51]]},
+ {g:"Mississippi Stud",n:"Per ante, optimal strategy",b:[["Ante and raises",4.91]]},
+ {g:"Video poker",n:"Optimal strategy",b:[["9/6 Jacks or Better",0.46],["8/5 Jacks or Better",2.7]]},
+ {g:"Craps",n:"Standard table",b:[["Odds behind the line",0],["Don’t pass / don’t come",1.36],["Pass line / come",1.41],["Place 6 or 8",1.52],["Field (pays 3:1 on 12)",2.78],["Field (pays 2:1 on 12)",5.56],["Big 6 / Big 8",9.09],["Hard 6 / hard 8",9.09],["Hard 4 / hard 10",11.11],["Any 7",16.67]]},
+ {g:"Baccarat",n:"8 decks",b:[["Banker (5% commission)",1.06],["Player",1.24],["Tie (pays 8:1)",14.36]]},
+ {g:"Roulette",n:"Single zero vs double zero wheels",b:[["European wheel, any bet",2.7],["American wheel, any bet",5.26],["American five-number bet",7.89]]},
+ {g:"Three Card Poker",n:"Common pay tables",b:[["Ante and play",3.37],["Pair Plus",7.28]]},
+ {g:"Slots",n:"Varies by machine and casino",b:[["Typical slot machine",8,"2–15%"]]},
+ {g:"Big Six wheel",n:"Money wheel, Las Vegas rules",b:[["Best spot ($1)",11.11],["Logo spots (40 to 1)",24.07]]},
+ {g:"Keno",n:"Varies by ticket",b:[["Typical ticket",27,"25–30%"]]},
+ {g:"Sports betting",n:"Typical sportsbook pricing",b:[["Spread or total at \u2212110",4.55],["2-team parlay",9.1]]},
+ {g:"Poker",n:"You play other players. The casino takes a rake instead of an edge.",b:[]}
+];
+var S=[],SET={},B=null,SC=null,DL=null,tab="me",bv="game";
+function ginfo(g){for(var i=0;i<GAMES.length;i++)if(GAMES[i][0]===g)return GAMES[i];if(g==="Poker")return["Poker","Poker","pc"];return[g,"Table","tb"]}
+function num(v){var n=parseFloat(String(v==null?"":v).replace(/[$,]/g,""));return isNaN(n)?null:n}
+function nz(v){var n=num(v);return n===null?0:n}
+function money(v){var r=Math.round(v);return(r>0?"+":r<0?"\u2212":"")+"$"+Math.abs(r).toLocaleString("en-US")}
+function plain(v){return"$"+Math.round(v).toLocaleString("en-US")}
+function cls(v){return v>0?"ok":v<0?"no":""}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function net(s){return nz(s.out)-nz(s.inn)-nz(s.tips)}
+function ven(s){return s.venue||s.casino||""}
+function over(s){var l=num(SET.budget),h=num(SET.hours);return(l!==null&&-net(s)>l)||(h!==null&&nz(s.hrs)>h)}
+function el(a){if(!a)return 0;return Math.max(0,(a.pausedAt||Date.now())-a.startedAt-(a.pausedMs||0))}
+function fmtT(ms){var t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return h+":"+(m<10?"0":"")+m+":"+(s<10?"0":"")+s}
+function opts(sel){return GAMES.map(function(g){return"<option"+(g[0]===sel?" selected":"")+">"+g[0]+"</option>"}).join("")}
+function saveSet(){SET.v=Date.now();if(B)return B.set(JSON.parse(JSON.stringify(SET))).catch(function(err){$("msg").textContent="Couldn\u2019t save the timer: "+((err&&(err.code||err.message))||"unknown error")+". It keeps running on this screen."})}
+$("fg").innerHTML=opts("Blackjack");
+function showFields(){var k=ginfo($("fg").value)[2];document.querySelectorAll("[data-k]").forEach(function(e){e.hidden=e.dataset.k.split(" ").indexOf(k)<0});$("lb1").textContent=k==="mc"?"Money in ($)":k==="pc"?"Total buy-in with rebuys ($)":k==="sb"?"Total wagered ($)":"Buy-in ($)";$("lb2").textContent=k==="mc"?"Money out ($)":k==="sb"?"Total returned ($)":"Cash-out ($)";document.querySelectorAll("[data-j]").forEach(function(e){e.hidden=!$("fj").checked});var gname=$("fg").value,gd=GD[gname]||{};$("lb3").textContent=k==="mc"?(gname==="Keno"?"Bet per game ($)":"Bet per spin ($)"):"Average bet ($)";$("lb4").textContent=(gd.u?gd.u.charAt(0).toUpperCase()+gd.u.slice(1):"Hands")+" per hour";$("fra").placeholder=gd.r||"";document.querySelectorAll("[data-bj]").forEach(function(e){e.hidden=!(gname==="Blackjack"||gname==="Spanish 21")})}
+$("fg").onchange=showFields;$("fj").onchange=showFields;showFields();
+function drawVenues(){var seen={},L=[];S.forEach(function(s){var v=ven(s);if(v&&!seen[v]){seen[v]=1;L.push(v)}});VEGAS.forEach(function(v){if(!seen[v]){seen[v]=1;L.push(v)}});$("vn").innerHTML=L.map(function(v){return'<option value="'+esc(v)+'">'}).join("")}
+function drawLive(){var ae=document.activeElement;if(ae&&$("live").contains(ae)&&ae.tagName!=="BUTTON")return;
+  if(!B){$("live").innerHTML="";return}
+  var a=SET.active;
+  if(!a){$("live").innerHTML='<h2 class="lvt">Live session</h2><div class="lv"><div class="f"><label>Game<select id="lg">'+opts("Blackjack")+'</select></label><label>Venue<input id="lvv" list="vn" placeholder="Pick or type"></label><label class="w">Average bet ($)<input id="lvb" type="text" inputmode="decimal" placeholder="25"></label></div><p class="lvhint" id="lvc">Pick a game and your average bet to see what it costs per hour, then tap Start.</p></div>';updCost();return}
+  var lim=num(SET.hours);
+  $("live").innerHTML='<h2 class="lvt">Live session</h2><div class="lv on"><div class="lvh">'+(a.pausedAt?"On a break":"Playing")+"<small>"+esc(a.game)+(a.venue?" at "+esc(a.venue):"")+(perHr(a.game,num(a.avg))?"<br>Expected cost about "+plain(perHr(a.game,num(a.avg)))+" an hour":"")+'</small></div><div class="clk" id="clk">'+fmtT(el(a))+'</div><div class="lvb"><button class="p2" data-a="'+(a.pausedAt?"resume":"pause")+'">'+(a.pausedAt?"Resume":"Pause")+'</button><button class="p" data-a="stop">Stop and log</button></div><button class="lnk" data-a="reset" style="margin-top:12px;padding:0">Reset timer without logging</button><p class="warn" id="lw"'+(lim!==null&&el(a)>lim*36e5?"":" hidden")+'>You\u2019ve passed your '+(lim===null?"":lim)+'-hour time limit.</p></div>'}
+setInterval(function(){fabUpd();var a=SET.active;if(a&&!a.pausedAt&&$("clk")){$("clk").textContent=fmtT(el(a));var lim=num(SET.hours);if($("lw"))$("lw").hidden=!(lim!==null&&el(a)>lim*36e5)}},1000);
+function drawCards(){var nT=0,n=0,h=0,T=0,L=0,k=0,c=0,ov=S.filter(over).length;S.forEach(function(s){n+=net(s);h+=nz(s.hrs);c+=nz(s.comps);var t=theo(s);if(t!=null){T+=t;L+=net(s)+t;nT+=net(s);k++}});
+  $("mc").innerHTML='<div class="card"><b class="'+(k?"no":"")+'">'+(k?money(-T):"\u2014")+'</b><span>Expected</span></div><div class="card"><b class="'+cls(nT)+'">'+(k?money(nT):"\u2014")+'</b><span>Actual</span></div><div class="card"><b class="'+cls(L)+'">'+(k?money(L):"\u2014")+'</b><span>Luck</span></div>';
+  var nt=[];if(S.length)nt.push(S.length+(S.length===1?" session, ":" sessions, ")+(Math.round(h*10)/10)+" hours"+(h?", "+money(n/h)+" an hour":""));if(ov)nt.push(ov+" over your limits");if(k&&c)nt.push("Comps "+plain(c)+" back on "+plain(T)+" theo ("+Math.round(c/T*100)+"%)");if(S.length>k)nt.push("Expected, actual and luck count the "+k+" of "+S.length+" sessions with a house edge and a bet size; poker and sessions without a bet size are left out");
+  $("mcn").textContent=nt.join(". ")+(nt.length?".":"")}
+function sorted(){return S.slice().sort(function(a,b){return(a.date||"")<(b.date||"")?-1:(a.date||"")>(b.date||"")?1:(a.ts||0)-(b.ts||0)})}
+var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function detail(s){var k=ginfo(s.game)[2],p=[];if(k==="pc"&&s.stakes)p.push(esc(s.stakes));if(k==="mc"){if(s.machine)p.push(esc(s.machine));if(s.denom)p.push(esc(s.denom))}if(k==="pt")p.push("entry "+plain(nz(s.inn)),"won "+plain(nz(s.out)));else p.push("in "+plain(nz(s.inn)),"out "+plain(nz(s.out)));if((k==="tb"||k==="mc")&&s.avg)p.push((k==="mc"?"bet $"+nz(s.avg):"avg bet "+plain(nz(s.avg))));if(nz(s.comps))p.push("comps "+plain(nz(s.comps)));var lk=luck(s);if(lk!=null)p.push("luck "+money(lk));if(nz(s.tips))p.push("tips "+plain(nz(s.tips)));p.push(nz(s.hrs)+"h");return p.join(", ")}
+function drawList(){var L=sorted().reverse();$("sl").innerHTML=L.length?L.map(function(s){var n=net(s),d=s.date?new Date(s.date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";return'<div class="r"><div class="l">'+esc(s.game)+(s.w2g?'<span class="jp">W-2G</span>':"")+(over(s)?'<span class="flag">Over limit</span>':"")+"<small>"+d+(ven(s)?", "+esc(ven(s)):"")+", "+detail(s)+'<button class="lnk" data-del="'+s.id+'">remove</button></small></div><span class="chip '+cls(n)+'">'+money(n)+"</span></div>"}).join(""):'<p class="sub" style="padding:14px;margin:0">Start a live session above, or log one you already played.</p>'}
+function years(){var Y={};Y[new Date().getFullYear()]=1;S.forEach(function(s){if(s.date)Y[s.date.slice(0,4)]=1});return Object.keys(Y).sort().reverse()}
+function drawReport(){var ys=years(),cur=$("yr").value||ys[0];$("yr").innerHTML=ys.map(function(y){return"<option"+(y===cur?" selected":"")+">"+y+"</option>"}).join("");
+  var L=S.filter(function(s){return(s.date||"").slice(0,4)===cur}),w=0,l=0,tw=0,tl=0,jn=0,ja=0,jw=0;
+  L.forEach(function(s){var n=net(s);if(ginfo(s.game)[2]==="pt"){if(n>0)tw+=n;else tl-=n}else{if(n>0)w+=n;else l-=n}if(s.w2g){jn++;ja+=nz(s.w2g.amt);jw+=nz(s.w2g.wh)}});
+  var row=function(a,b,c){return'<div class="r"><div class="l">'+a+'</div><b class="'+(c||"")+'">'+b+"</b></div>"};
+  $("rp").innerHTML=row("Sessions logged",L.length)+row("Winning sessions, total won",plain(w),"ok")+row("Losing sessions, total lost",plain(l),"no")+row("Poker tournaments, won",plain(tw),"ok")+row("Poker tournaments, lost (fees and rebuys)",plain(tl),"no")+row("Net for the year",money(w-l+tw-tl),cls(w-l+tw-tl))+row("W-2G forms",jn)+row("W-2G amounts",plain(ja))+row("Tax withheld",plain(jw))+(+cur>=2026&&(l+tl)>0?row("Losses you could deduct if you itemize",plain(Math.min(0.9*(l+tl),w+tw))):"");
+  $("rnote").textContent="A record of the sessions you logged, not tax advice. W-2G jackpots and poker tournaments are listed separately because different rules apply."+(+cur>=2026?" For 2026, casinos issue a W-2G for slot, video poker and keno wins of $2,000 or more and for poker tournament wins over $5,000 net. If you itemize, you can deduct 90% of your gambling losses, up to your winnings.":"")+" Check with a tax professional.";
+  var J=L.filter(function(s){return s.w2g});$("wl").innerHTML=J.length?J.map(function(s){return'<div class="r"><div class="l">'+esc(s.game)+"<small>"+esc(s.date||"")+(ven(s)?", "+esc(ven(s)):"")+", withheld "+plain(nz(s.w2g.wh))+'</small></div><b>'+plain(nz(s.w2g.amt))+"</b></div>"}).join(""):'<p class="sub" style="padding:14px;margin:0">No W-2G jackpots logged this year.</p>';
+  $("csvb").hidden=!DL}
+function drawOdds(){if($("cg")&&!$("cg").options.length){$("cg").innerHTML=Object.keys(GD).filter(function(g){return GD[g].e!=null&&!GD[g].wag}).map(function(g){return"<option"+(g==="Blackjack"?" selected":"")+">"+esc(g)+"</option>"}).join("");drawCalc()}var all=[];ODDS.forEach(function(o){o.b.forEach(function(b){all.push({g:o.g,b:b})})});all.sort(function(a,b){return a.b[1]-b.b[1]});
+  var ec=function(v){return v<=1.5?"ok":v<=5?"wa":"no"},ep=function(b){return b[2]||(b[1]===0?"0%":b[1]+"%")};
+  var row=function(x){return'<div class="r"><div class="l">'+x.b[0]+"<small>"+x.g+'</small></div><span class="chip '+ec(x.b[1])+'">'+ep(x.b)+"</span></div>"};
+  $("best").innerHTML=all.slice(0,5).map(row).join("");$("worst").innerHTML=all.slice(-5).reverse().map(row).join("");
+  $("all").innerHTML=ODDS.map(function(o){return'<div class="gl" style="margin-bottom:8px"><div class="gh">'+o.g+'</div><div class="gn">'+o.n+"</div>"+o.b.map(function(b){return'<div class="r"><div class="l">'+b[0]+'</div><span class="chip '+ec(b[1])+'">'+ep(b)+"</span></div>"}).join("")+"</div>"}).join("")}
+function fillSet(){$("ssk").value=SET.skill||"good";$("sst").value=startAmt()||"";$("lb").value=SET.budget!=null?SET.budget:"";$("lh").value=SET.hours!=null?SET.hours:""}
+function startAmt(){var b=SET.bank||{},s=nz(SET.start);Object.keys(b).forEach(function(k){s+=nz(b[k])});return s}
+function drawBank2(){var st=startAmt(),depT=0,dIn=0,dOut=0,res=0;(SET.deposits||[]).forEach(function(d){var a=nz(d.amt);depT+=a;if(a<0)dOut-=a;else dIn+=a});S.forEach(function(s){res+=net(s)});var tot=st+depT+res;
+  var EV=sorted().map(function(s){return{d:s.date||"",t:s.ts||0,v:net(s)}}).concat((SET.deposits||[]).map(function(x){return{d:x.date||"",t:x.ts||0,v:nz(x.amt)}})).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.t-b.t}),pts=[st],v=st,chart="";EV.forEach(function(e){v+=e.v;pts.push(v)});
+  if(pts.length>2){var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts),rg=(mx-mn)||1;chart='<svg class="chart" viewBox="0 0 320 100" preserveAspectRatio="none" aria-label="Bankroll over time"><polyline points="'+pts.map(function(y,i){return(i*320/(pts.length-1)).toFixed(1)+","+(6+88*(1-(y-mn)/rg)).toFixed(1)}).join(" ")+'" fill="none" style="stroke:var(--amb)" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>'}
+  $("bk").innerHTML='<div class="r bkr'+(chart?" g":"")+'"><div><div class="l">Total bankroll<small>'+(st+dIn?"Put in "+plain(st+dIn)+", ":"")+(dOut?"took out "+plain(dOut)+", ":"")+(st+dIn||dOut?(res>=0?"up ":"down "):(res>=0?"Up ":"Down "))+plain(Math.abs(res))+(function(){var L=0,k=0;S.forEach(function(s){var l=luck(s);if(l!=null){L+=l;k++}});return k?", luck "+money(L):""})()+'</small></div><b style="display:block;text-align:left;font-size:34px;margin-top:8px">'+plain(tot)+"</b>"+(chart?"":'<small style="display:block;color:var(--mut);font-size:12px;margin-top:6px">A graph appears after a couple of sessions.</small>')+"</div>"+chart+"</div>"}
+function drawLdr2(){var G={},HR={};S.forEach(function(s){G[s.game]=(G[s.game]||0)+net(s);HR[s.game]=(HR[s.game]||0)+nz(s.hrs)});var ks=Object.keys(G);if(!ks.length){$("ldr").innerHTML="";return}
+  ks.sort(function(a,b){return G[b]-G[a]});var best=ks[0],worst=ks[ks.length-1],L=sorted().reverse(),k=0,w=L.length?net(L[0])>0:true;for(var i=0;i<L.length&&(net(L[i])>0)===w&&net(L[i])!==0;i++)k++;
+  var t=function(lab,name,v,c){return'<button class="lc" data-a2="ldr"><span>'+lab+"</span><b>"+esc(name)+'</b><em class="'+c+'">'+v+"</em></button>"};
+  $("ldr").innerHTML=t("Best game",best,money(G[best]),cls(G[best]))+(G[worst]<0?t("Worst game",worst,money(G[worst]),"no"):(function(){var bh=ks.filter(function(q){return HR[q]>0}).sort(function(a,b){return G[b]/HR[b]-G[a]/HR[a]})[0];return bh?t("Best hourly",bh,money(G[bh]/HR[bh])+"/hr",cls(G[bh])):t("Worst game",worst,money(G[worst]),cls(G[worst]))})())+(function(){var m=new Date().toLocaleDateString("en-CA").slice(0,7),lm=0,ln=0;S.forEach(function(s){if((s.date||"").slice(0,7)===m){var l=luck(s);if(l!=null){lm+=l;ln++}}});return t("Luck this month",ln?money(lm):"\u2014",ln?ln+(ln===1?" session":" sessions"):"Add a bet size",ln?cls(lm):"")})()}
+function drawTop(){var G={},TH=0;S.forEach(function(s){var g=G[s.game]=G[s.game]||{n:0,h:0};g.n++;g.h+=nz(s.hrs);TH+=nz(s.hrs)});var ks=Object.keys(G).sort(function(a,b){return G[b].h-G[a].h||G[b].n-G[a].n}).slice(0,4);["Blackjack","Slots","Poker cash","Keno"].forEach(function(d){if(ks.length<4&&ks.indexOf(d)<0)ks.push(d)});$("top3w").hidden=false;
+  $("top3").innerHTML=ks.map(function(k){var g=G[k];return'<button class="mpb" data-a2="pick" data-gm="'+esc(k)+'"><b>'+esc(k==="Poker cash"?"Poker":k)+"</b><span>"+(g?(Math.round(g.h*10)/10)+"h, "+(TH?Math.round(g.h/TH*100):0)+"%":"Tap to start")+"</span></button>"}).join("")};
+function drawBreak(){var G={};S.forEach(function(s){var k=bv==="game"?s.game:bv==="venue"?(ven(s)||"No venue"):(s.date?DAYS[new Date(s.date+"T12:00:00").getDay()]:"No date");var g=G[k]=G[k]||{n:0,net:0,h:0,lk:0,ln:0};g.n++;g.net+=net(s);g.h+=nz(s.hrs);var l=luck(s);if(l!=null){g.lk+=l;g.ln++}});
+  $("bh").innerHTML="<tr><th>"+(bv==="game"?"Game":bv==="venue"?"Venue":"Day")+"</th><th>Net</th><th>Luck</th>"+(bv==="game"?"<th>Edge</th>":"")+"</tr>";
+  var ks=Object.keys(G);if(bv==="day")ks.sort(function(a,b){return DAYS.indexOf(a)-DAYS.indexOf(b)});else ks.sort(function(a,b){return G[b].net-G[a].net});
+  $("bg").innerHTML=ks.length?ks.map(function(k){var g=G[k];return"<tr><td><span class=\"bn2\">"+esc(k)+'</span><small class="ss">'+g.n+(g.n===1?" session":" sessions")+'</small></td><td class="'+cls(g.net)+'">'+money(g.net)+'</td><td class="'+cls(g.lk)+'">'+(g.ln?money(g.lk):"\u2014")+"</td>"+(bv==="game"?'<td class="ed">'+edgeLbl(k)+"</td>":"")+"</tr>"}).join(""):'<tr><td colspan="4" style="text-align:center;color:var(--mut);font:14px system-ui">No sessions yet</td></tr>'};
+function costLine(g,b){var e=edgeOf(g),d=GD[g]||{};if(g==="Poker cash"||g==="Poker tournament")return"In poker you play other players. The casino takes a rake or fee instead of a house edge.";if(e==null)return"Pick a game with a known house edge to see its cost.";if(d.wag)return"Sportsbooks keep about "+e+"% of what you bet at \u2212110.";if(!(b>0))return"Add your average bet to see what "+g+" costs per hour.";return g+" at "+plain(b)+": expect to lose about "+plain(perHr(g,b))+" an hour"+(d.est?" (an estimate; machines vary)":"")+"."}
+function updCost(){if($("lvc")&&$("lg"))$("lvc").textContent=costLine($("lg").value,num($("lvb")&&$("lvb").value));if($("cg"))drawCalc()}
+function drawCalc(){var g=$("cg").value,b=num($("cb").value),h=num($("ch").value)||1,d=GD[g]||{},e=edgeOf(g),out;if(e==null||d.wag)out=costLine(g,b);else if(!(b>0))out="Enter your average bet.";else{var r=num($("cr").value)||d.r;out="Expected loss about "+plain(b*r*h*e/100)+" over "+h+(h===1?" hour":" hours")+" ("+plain(b*r*e/100)+" an hour: "+r+" "+d.u+" an hour, house edge "+e+"%)."+(d.est?" Machine edges vary; this is an estimate.":"")}$("cout").textContent=out;$("cr").placeholder=d.r||""}
+document.addEventListener("input",function(e){var i=e.target.id;if(i==="lvb"||i==="cb"||i==="ch"||i==="cr")updCost()});
+document.addEventListener("change",function(e){var i=e.target.id;if(i==="lg"||i==="cg")updCost()});
+function render(){var wd=false;try{wd=localStorage.getItem("onl-wel")==="1"}catch(x){}$("wel").hidden=wd||S.length>0;drawVenues();drawLive();fabUpd();drawCards();drawBank2();drawTop();drawLdr2();drawBreak();drawList();drawReport()}
+$("yr").onchange=drawReport;
+function pauseT(){var x=SET.active;if(!x||x.pausedAt)return;x.pausedAt=Date.now();saveSet();drawLive()}
+function resumeT(){var x=SET.active;if(!x||!x.pausedAt)return;x.pausedMs=(x.pausedMs||0)+(Date.now()-x.pausedAt);x.pausedAt=null;saveSet();drawLive()}
+function goTab(t){tab=t;document.querySelectorAll(".bn button[data-t]").forEach(function(x){x.classList.toggle("on",x.dataset.t===tab)});["me","rep","odds","adm"].forEach(function(id){$(id).hidden=id!==tab})}
+function fabUpd(){var a=SET.active,f=$("fabt");if(!f)return;var t=a?el(a):0,s=Math.floor(t/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),sc=s%60,p2=function(n){return(n<10?"0":"")+n};f.textContent=!a?"Start":h?h+":"+p2(m)+":"+p2(sc):m+":"+p2(sc);$("fab").classList.toggle("run",!!a);$("fab").classList.toggle("pz",!!(a&&a.pausedAt))}
+var _dl=drawLive;drawLive=function(){_dl();fabUpd()};
+document.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+  if(b.dataset.t){goTab(b.dataset.t);window.scrollTo(0,0);return}
+  if(b.dataset.nv==="set"){goTab("me");$("setf").open=true;$("setf").scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(b.dataset.a2==="pick"){goTab("me");if($("lg")&&!SET.active)$("lg").value=b.dataset.gm;$("live").scrollIntoView({behavior:"smooth",block:"center"});return}
+  if(b.dataset.a2==="wx"){try{localStorage.setItem("onl-wel","1")}catch(x){}$("wel").hidden=true;return}
+  if(b.dataset.a2==="ldr"){goTab("me");$("resh").scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(b.dataset.a2==="fab"){if(SET.active){if(SET.active.pausedAt)resumeT();else pauseT();return}if(B){SET.active={game:$("lg")?$("lg").value:"Blackjack",venue:$("lvv")?$("lvv").value.trim():"",avg:$("lvb")?num($("lvb").value):null,startedAt:Date.now(),pausedMs:0,pausedAt:null};saveSet();drawLive()}goTab("me");var lvc=$("live");lvc.scrollIntoView({behavior:"smooth",block:"center"});var c=lvc.querySelector(".lv");if(c){c.classList.remove("pulse");void c.offsetWidth;c.classList.add("pulse")}return}
+  if(b.dataset.b){bv=b.dataset.b;document.querySelectorAll("#bseg button").forEach(function(x){x.className=x.dataset.b===bv?"on":""});drawBreak();return}
+  if(b.dataset.del&&SC){if(!confirm("Remove this session? This can\u2019t be undone."))return;SC.doc(b.dataset.del).delete().catch(function(){$("msg").textContent="Could not remove that session."});return}
+  var a=b.dataset.a;if(!a)return;
+  if(!B&&a!=="csv"&&a!=="pdf"){$("msg").textContent="Sign in to save your sessions.";return}
+  if(a==="start"){SET.active={game:$("lg").value,venue:$("lvv").value.trim(),avg:num($("lvb").value),startedAt:Date.now(),pausedMs:0,pausedAt:null};saveSet();document.activeElement.blur();drawLive();return}
+  if(a==="outm"){var of=$("outf");of.hidden=!of.hidden;$("addf").hidden=true;if(!of.hidden)$("om").focus();return}
+  if(a==="outsave"){var oa=num($("om").value);if(oa===null||oa<=0){$("omsg").textContent="Enter the amount you took out.";return}SET.deposits=(SET.deposits||[]).concat([{cat:"All",amt:-oa,kind:"out",date:new Date().toLocaleDateString("en-CA"),ts:Date.now()}]);saveSet();$("om").value="";$("omsg").textContent="";$("outf").hidden=true;document.activeElement.blur();render();return}
+  if(a==="addm"){var af=$("addf");af.hidden=!af.hidden;if(!af.hidden)$("am").focus();return}
+  if(a==="addsave"){var amt=num($("am").value);if(amt===null||amt<=0){$("amsg").textContent="Enter an amount to add.";return}SET.deposits=(SET.deposits||[]).concat([{cat:"All",amt:amt,date:new Date().toLocaleDateString("en-CA"),ts:Date.now()}]);var pa=saveSet();$("am").value="";$("amsg").textContent="";$("addf").hidden=true;document.activeElement.blur();render();return}
+  if(a==="reset"){SET.active=null;saveSet();drawLive();return}
+  if(a==="pause"){pauseT();return}
+  if(a==="resume"){resumeT();return}
+  if(a==="stop"){var x=SET.active,hrs=Math.round(el(x)/36e3)/100;$("fg").value=x.game;$("fv").value=x.venue||"";$("fh").value=hrs;$("fd").value=new Date(x.startedAt).toLocaleDateString("en-CA");showFields();if(x.avg)$("fa").value=x.avg;SET.active=null;saveSet();drawLive();$("logf").open=true;$("logf").scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(a==="save"){var g=$("fg").value,k=ginfo(g)[2],d={game:g,date:$("fd").value,venue:$("fv").value.trim(),hrs:num($("fh").value),tips:nz($("ft").value),ts:Date.now()};
+    if(k==="pt"){d.inn=nz($("fe").value)+nz($("fr").value);d.out=nz($("fw").value);d.entry=nz($("fe").value);d.rebuys=nz($("fr").value)}else{d.inn=num($("fb").value);d.out=num($("fo").value)}
+    if(k==="pc")d.stakes=$("fst").value.trim();if(k==="tb"||k==="mc")d.avg=num($("fa").value);if($("fra").value.trim())d.rate=num($("fra").value);if(nz($("fc").value))d.comps=nz($("fc").value);if((g==="Blackjack"||g==="Spanish 21")&&$("fsd").value&&num($("fsa").value)){d.side=$("fsd").value;d.sideAmt=num($("fsa").value)}if(k==="mc"){d.machine=$("fm").value.trim();d.denom=$("fdn").value.trim()}
+    if($("fj").checked){var ja=num($("fwa").value);if(ja===null){$("fm2").textContent="Add the W-2G amount.";return}d.w2g={amt:ja,wh:nz($("fww").value)}}
+    if(k==="sb"&&d.hrs===null)d.hrs=0;
+    if(d.inn===null||d.out===null||d.hrs===null||(d.hrs<=0&&k!=="sb")||(k==="pt"&&!d.inn)){$("fm2").textContent=k==="pt"?"Add the entry fee and hours played.":"Add the money in, money out and hours played.";return}
+    SC.doc("s"+Date.now()).set(d).then(function(){["fb","fo","fh","ft","fe","fr","fw","fa","fm","fdn","fst","fwa","fww","fra","fc","fsa"].forEach(function(i){$(i).value=""});$("fj").checked=false;showFields();$("fm2").textContent="";$("logf").open=false}).catch(function(){$("fm2").textContent="Could not save. Try again."});return}
+  if(a==="set"){SET.skill=$("ssk").value;SET.start=num($("sst").value);SET.bank=null;SET.budget=num($("lb").value);SET.hours=num($("lh").value);var pr=saveSet();if(pr)pr.then(function(){$("sm").textContent="Settings saved."});render();return}
+  if(a==="pdf"){makePDF();return}
+  if(a==="csv"&&DL){var y=$("yr").value,rows=[["date","game","venue","hours","money_in","money_out","tips","net","w2g_amount","w2g_withheld"]];sorted().filter(function(s){return(s.date||"").slice(0,4)===y}).forEach(function(s){rows.push([s.date||"",s.game,ven(s),nz(s.hrs),nz(s.inn),nz(s.out),nz(s.tips),net(s),s.w2g?nz(s.w2g.amt):"",s.w2g?nz(s.w2g.wh):""])});
+    var csv=rows.map(function(r){return r.map(function(c){c=String(c);return/[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(",")}).join("\n");
+    DL.save({filename:"oddsnotluck-"+y+".csv",data:csv}).then(function(){$("cm").textContent=""}).catch(function(err){if(err&&err.code==="unavailable")$("csvb").hidden=true;else if(!(err&&err.code==="declined"))$("cm").textContent="The download didn\u2019t go through."});return}
+});
+$("fd").value=new Date().toLocaleDateString("en-CA");
+drawOdds();render();
+// ───── Yearly report as PDF ─────
+function loadJsPDF(){return window.jspdf?Promise.resolve():new Promise(function(ok,no){var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+function pdfTxt(t){return String(t==null?"":t).replace(/\u2212/g,"-").replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,"-").replace(/[^\x00-\xFF]/g,"")}
+async function makePDF(){
+  var y=$("yr").value,btn=$("pdfb");$("cm").textContent="";btn.disabled=true;
+  try{await loadJsPDF()}catch(e){$("cm").textContent="Couldn\u2019t load the PDF maker. Check your connection and try again.";btn.disabled=false;return}
+  try{
+  var J=window.jspdf.jsPDF,doc=new J({unit:"pt",format:"letter"}),W=612,H=792,M=54,Y=M;
+  var ink=[26,20,48],mut=[97,90,120],acc=[106,46,232],ok=[15,138,95],no=[194,65,45],rule=[221,216,234];
+  function col(c){doc.setTextColor(c[0],c[1],c[2])}
+  function foot(){doc.setFont("helvetica","normal");doc.setFontSize(8);col(mut);doc.text(pdfTxt("OddsNotLuck yearly report "+y+". A record of logged sessions, not tax advice. Page "+doc.getNumberOfPages()),M,H-30)}
+  function need(h){if(Y+h>H-56){foot();doc.addPage();Y=M}}
+  function hline(){doc.setDrawColor(rule[0],rule[1],rule[2]);doc.setLineWidth(.6);doc.line(M,Y,W-M,Y)}
+  function head(t){need(40);Y+=14;doc.setFont("helvetica","bolditalic");doc.setFontSize(15);col(ink);doc.text(pdfTxt(t),M,Y);Y+=6;doc.setDrawColor(acc[0],acc[1],acc[2]);doc.setLineWidth(2);doc.line(M,Y,M+24,Y);Y+=16}
+  // Title
+  doc.setFont("helvetica","bolditalic");doc.setFontSize(24);col(acc);doc.text("Odds",M,Y+10);var x=M+doc.getTextWidth("Odds");col([150,140,180]);doc.text("Not",x,Y+10);x+=doc.getTextWidth("Not");col(ink);doc.text("Luck",x,Y+10);
+  Y+=34;doc.setFont("helvetica","bold");doc.setFontSize(13);col(ink);doc.text("Yearly report, "+y,M,Y);
+  Y+=15;doc.setFont("helvetica","normal");doc.setFontSize(9);col(mut);doc.text(pdfTxt("Created "+new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})+(UID&&$("aemail").textContent?" for "+$("aemail").textContent:"")),M,Y);Y+=10;
+  // Summary rows
+  head("Summary");
+  document.querySelectorAll("#rp .r").forEach(function(r){var l=r.querySelector(".l"),b=r.querySelector("b");need(22);doc.setFont("helvetica","normal");doc.setFontSize(10.5);col(ink);doc.text(pdfTxt(l?l.firstChild.textContent:""),M,Y+4);doc.setFont("helvetica","bold");col(b&&b.classList.contains("ok")?ok:b&&b.classList.contains("no")?no:ink);doc.text(pdfTxt(b?b.textContent:""),W-M,Y+4,{align:"right"});Y+=11;hline();Y+=11});
+  // W-2G
+  var JK=S.filter(function(s){return(s.date||"").slice(0,4)===y&&s.w2g}).sort(function(a,b){return(a.date||"")<(b.date||"")?-1:1});
+  head("W-2G jackpots");
+  if(!JK.length){doc.setFont("helvetica","normal");doc.setFontSize(10);col(mut);doc.text("None logged this year.",M,Y+4);Y+=18}
+  JK.forEach(function(s){need(22);doc.setFont("helvetica","normal");doc.setFontSize(10.5);col(ink);doc.text(pdfTxt((s.date||"")+"  "+s.game+(ven(s)?", "+ven(s):"")),M,Y+4);doc.setFont("helvetica","bold");doc.text(pdfTxt(plain(nz(s.w2g.amt))+"  (withheld "+plain(nz(s.w2g.wh))+")"),W-M,Y+4,{align:"right"});Y+=11;hline();Y+=11});
+  // Session log
+  var L=sorted().filter(function(s){return(s.date||"").slice(0,4)===y});
+  head("Session log ("+L.length+")");
+  var C=[["Date",M,"left"],["Game",M+62,"left"],["Venue",M+188,"left"],["Hours",M+338,"right"],["In",M+392,"right"],["Out",M+448,"right"],["Net",W-M,"right"]];
+  function th(){doc.setFont("helvetica","bold");doc.setFontSize(8);col(mut);C.forEach(function(c){doc.text(c[0].toUpperCase(),c[1],Y,{align:c[2]})});Y+=6;hline();Y+=12}
+  th();
+  L.forEach(function(s){if(Y+16>H-56){foot();doc.addPage();Y=M;th()}var n=net(s),v=[s.date||"",s.game,ven(s),String(Math.round(nz(s.hrs)*100)/100),plain(nz(s.inn)),plain(nz(s.out)),money(n)];doc.setFontSize(9.5);C.forEach(function(c,i){doc.setFont("helvetica",i===6?"bold":"normal");col(i===6?(n>0?ok:n<0?no:ink):ink);var t=pdfTxt(v[i]);var mw=i===1?120:i===2?140:999;while(doc.getTextWidth(t)>mw&&t.length>1)t=t.slice(0,-2)+"\u2026";doc.text(pdfTxt(t).replace(/\u2026/g,"..."),c[1],Y,{align:c[2]})});Y+=8;hline();Y+=12});
+  if(!L.length){doc.setFont("helvetica","normal");doc.setFontSize(10);col(mut);doc.text("No sessions logged this year.",M,Y);Y+=14}
+  // Notes
+  need(70);Y+=10;doc.setFont("helvetica","normal");doc.setFontSize(8.5);col(mut);
+  var note=+y>=2026?"For 2026, casinos issue a W-2G for slot, video poker, keno and bingo wins of $2,000 or more and for poker tournament wins over $5,000 net. All gambling winnings are taxable, with or without a W-2G. If you itemize, you can deduct 90% of gambling losses, up to your winnings. ":"";
+  doc.text(doc.splitTextToSize(pdfTxt(note+"Net is money out minus money in and tips. This is a record of the sessions logged in OddsNotLuck, not tax advice; check with a tax professional."),W-2*M),M,Y);
+  foot();
+  doc.save("oddsnotluck-"+y+".pdf");
+  }catch(e){$("cm").textContent="The PDF didn\u2019t go through. Try again."}
+  btn.disabled=false
+}
+// ───── Supabase: sign-in and data (replaces the claude.ai database) ─────
+if(typeof supabase==="undefined"){document.body.classList.remove("boot");document.getElementById("amsg2").textContent="Couldn\u2019t load sign-in. Check your connection and reload.";throw new Error("Supabase did not load")}
+function unboot(){document.body.classList.remove("boot")}
+setTimeout(unboot,6000);
+var SB_URL="https://mldbvglyqejgyfnntxqq.supabase.co",SB_KEY="sb_publishable_G_WXAetu0jSFLinre4BaMQ_Lb1-R__j";
+var sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+var UID=null,CH=null,amode="in",RECOV=false,BOOTING=false;
+function nn(v){return v==null?null:+v}
+function chk(r){if(r&&r.error)throw r.error;return r}
+function deb(f){var t;return function(){clearTimeout(t);t=setTimeout(f,300)}}
+DL={save:function(o){try{var b=new Blob([o.data],{type:"text/csv"}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=o.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);return Promise.resolve()}catch(e){return Promise.reject(e)}}};
+function fromS(r){var x={id:r.id,game:r.game,date:r.played_on,venue:r.venue,hrs:nn(r.hours),inn:nn(r.buy_in),out:nn(r.cash_out),tips:nn(r.tips),stakes:r.stakes,avg:nn(r.avg_bet),machine:r.machine,denom:r.denom,entry:nn(r.entry_fee),rebuys:nn(r.rebuys),rate:nn(r.rate),comps:nn(r.comps),side:r.side_bet,sideAmt:nn(r.side_amt),ts:nn(r.ts)};if(r.w2g_amount!=null)x.w2g={amt:+r.w2g_amount,wh:nn(r.w2g_withheld)||0};Object.keys(x).forEach(function(k){if(x[k]==null)delete x[k]});return x}
+function toS(d){var o=function(v){return v==null||v===""?null:v};return{game:d.game,played_on:d.date||new Date().toLocaleDateString("en-CA"),venue:o(d.venue),hours:nn(d.hrs),buy_in:nz(d.inn),cash_out:nz(d.out),tips:nz(d.tips),stakes:o(d.stakes),avg_bet:o(d.avg),machine:o(d.machine),denom:o(d.denom),entry_fee:o(d.entry),rebuys:o(d.rebuys),rate:o(d.rate),comps:o(d.comps),side_bet:o(d.side),side_amt:o(d.sideAmt),w2g_amount:d.w2g?d.w2g.amt:null,w2g_withheld:d.w2g?nz(d.w2g.wh):null,ts:d.ts||Date.now()}}
+function fromDep(r){var x={id:r.id,amt:+r.amount,date:r.added_on,ts:nn(r.ts)};if(r.kind==="out")x.kind="out";return x}
+function fromSet(r,deps){var x={start:nn(r.start_bankroll),budget:nn(r.loss_limit),hours:nn(r.time_limit_hours),active:r.active_timer||null,v:+r.timer_version||0,deposits:deps||[]};if(r.skill)x.skill=r.skill;return x}
+async function loadSessions(){if(!UID)return;var r=await sb.from("sessions").select("*").order("played_on").order("ts");if(r.error){$("msg").textContent="Could not load your sessions. Check your connection and reopen the app.";return}S=r.data.map(fromS);render()}
+async function loadDeps(){if(!UID)return;var r=await sb.from("deposits").select("*").order("added_on").order("ts");if(r.error)return;SET.deposits=r.data.map(fromDep);render()}
+async function loadSet(){if(!UID)return;var r=await sb.from("user_settings").select("*").eq("user_id",UID).maybeSingle();if(r.error||!r.data)return;if((+r.data.timer_version||0)>(SET.v||0)){SET=fromSet(r.data,SET.deposits);fillSet();render()}}
+var PEND={};
+var Bimpl={set:function(o){
+  var jobs=[sb.rpc("save_settings",{p:{start:o.start,budget:o.budget,hours:o.hours,skill:o.skill||null,active:o.active||null},p_version:o.v}).then(chk)];
+  var news=(o.deposits||[]).filter(function(d){return!d.id&&!PEND[d.ts]});
+  if(news.length){news.forEach(function(d){PEND[d.ts]=1});jobs.push(sb.from("deposits").insert(news.map(function(d){return{amount:d.amt,kind:d.amt<0?"out":"in",added_on:d.date,ts:d.ts}})).then(chk).then(loadDeps))}
+  return Promise.all(jobs)}};
+var SCimpl={doc:function(id){return{
+  set:function(d){return sb.from("sessions").insert(toS(d)).then(chk).then(loadSessions)},
+  delete:function(){return sb.from("sessions").delete().eq("id",id).then(chk).then(loadSessions)}}}};
+async function boot(sess){
+  if(RECOV)return;
+  if(!sess||!sess.user){signedOut();return}
+  if(UID===sess.user.id||BOOTING)return;
+  BOOTING=true;UID=sess.user.id;
+  try{
+    document.body.classList.remove("out");$("aemail").textContent=sess.user.email||"";$("msg").textContent="";
+    var r=await sb.from("user_settings").select("*").eq("user_id",UID).maybeSingle(),row=r.data;
+    if(!row&&!r.error){var ins=await sb.from("user_settings").insert({user_id:UID}).select().single();row=ins.data}
+    if(!row){$("msg").textContent="Could not load your settings. Check your connection and reopen the app.";row={}}
+    var d=await sb.from("deposits").select("*").order("added_on").order("ts");
+    SET=fromSet(row,(d.data||[]).map(fromDep));B=Bimpl;SC=SCimpl;fillSet();render();checkAdmin();$("agec").hidden=!!(row.age_confirmed_at||!row.user_id);
+    await loadSessions();
+    if(CH)sb.removeChannel(CH);
+    var f="user_id=eq."+UID;
+    CH=sb.channel("onl-"+UID)
+      .on("postgres_changes",{event:"*",schema:"public",table:"user_settings",filter:f},function(pl){var n=pl.new;if(!n||!n.user_id)return;if((+n.timer_version||0)<=(SET.v||0))return;SET=fromSet(n,SET.deposits);drawLive();drawBank2();drawCards();drawTop()})
+      .on("postgres_changes",{event:"*",schema:"public",table:"sessions",filter:f},deb(loadSessions))
+      .on("postgres_changes",{event:"*",schema:"public",table:"deposits",filter:f},deb(loadDeps))
+      .subscribe();
+  }finally{BOOTING=false}
+}
+function signedOut(){$("admb").hidden=true;$("agec").hidden=true;if(tab==="adm")goTab("me");UID=null;B=null;SC=null;S=[];SET={};if(CH){sb.removeChannel(CH);CH=null}document.body.classList.add("out");setMode("in");render()}
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&UID){loadSet();loadDeps();loadSessions()}});
+
+// ───── Admin dashboard (only admins see it; the database checks every call too) ─────
+var AU=[],AF="all";
+function ago(t){if(!t)return"never";var m=Math.round((Date.now()-new Date(t))/60000);if(m<2)return"just now";if(m<60)return m+" min ago";var h=Math.round(m/60);if(h<24)return h+" hr ago";var d=Math.round(h/24);if(d<31)return d+" day"+(d===1?"":"s")+" ago";return ddate(t)}
+function ddate(t){var x=new Date(t);return x.toLocaleDateString("en-US",x.getFullYear()===new Date().getFullYear()?{month:"short",day:"numeric"}:{month:"short",day:"numeric",year:"numeric"})}
+async function checkAdmin(){var r=await sb.rpc("is_admin");$("admb").hidden=!(r&&r.data===true)}
+async function loadAdmin(){
+  $("adt").textContent="Loading\u2026";
+  var r=await sb.rpc("admin_users");
+  if(r.error){$("adt").textContent="Couldn\u2019t load accounts.";return}
+  AU=r.data||[];drawAdmin();
+  $("adt").textContent="Updated "+new Date().toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+}
+function inDays(t,n){return t&&new Date(t)>Date.now()-n*864e5}
+function drawAdmin(){
+  var U=AU,ss=U.reduce(function(a,u){return a+(+u.sessions||0)},0);
+  function cell(v,l){return'<div class="lc"><b>'+v+'</b><span>'+l+'</span></div>'}
+  $("ads").innerHTML=cell(U.length,"Accounts")+cell(U.filter(function(u){return inDays(u.last_active,7)}).length,"Active, last 7 days")+cell(U.filter(function(u){return inDays(u.last_active,30)}).length,"Active, last 30 days")+cell(U.filter(function(u){return inDays(u.created_at,7)}).length,"New this week")+cell(U.filter(function(u){return u.confirmed}).length,"Email confirmed")+cell(ss.toLocaleString("en-US"),"Sessions logged");
+  // sign-ups, last 30 days
+  var today=new Date();today.setHours(0,0,0,0);var days=[];for(var i=29;i>=0;i--){var d=new Date(today);d.setDate(d.getDate()-i);days.push({t:d.getTime(),n:0})}
+  U.forEach(function(u){var c=new Date(u.created_at);c.setHours(0,0,0,0);for(var i=0;i<days.length;i++)if(days[i].t===c.getTime()){days[i].n++;break}});
+  var mx=Math.max.apply(null,days.map(function(x){return x.n}))||1;
+  $("adc").innerHTML=days.map(function(x){return'<i style="height:'+(x.n?Math.max(8,x.n/mx*100):0)+'%" title="'+ddate(x.t)+': '+x.n+'"></i>'}).join("");
+  $("adc0").textContent=ddate(days[0].t);
+  // users
+  var q=$("adq").value.trim().toLowerCase();
+  var L=U.filter(function(u){
+    if(q&&String(u.email||"").toLowerCase().indexOf(q)<0)return false;
+    return AF==="all"||(AF==="a7"&&inDays(u.last_active,7))||(AF==="n7"&&inDays(u.created_at,7))||(AF==="unc"&&!u.confirmed)||(AF==="dis"&&u.disabled)||(AF==="adm"&&u.is_admin)});
+  $("adl").innerHTML=L.map(function(u){
+    var me=u.id===UID,hrs=Math.round((+u.hours||0)*10)/10;
+    var tags=(me?'<span class="tg y">You</span>':'')+(u.is_admin?'<span class="tg a">Admin</span>':'')+(!u.confirmed?'<span class="tg w">Unconfirmed</span>':'')+(u.disabled?'<span class="tg x">Disabled</span>':'');
+    var acts=me?'':'<div class="ac"><button class="p2" data-ad="'+(u.is_admin?"unadmin":"admin")+'" data-u="'+u.id+'">'+(u.is_admin?"Remove admin":"Make admin")+'</button><button class="p2" data-ad="'+(u.disabled?"enable":"disable")+'" data-u="'+u.id+'">'+(u.disabled?"Enable":"Disable")+'</button><button class="del" data-ad="delete" data-u="'+u.id+'">Delete</button></div>';
+    return'<div class="ur"><div class="em">'+esc(u.email)+tags+'</div><div class="dt">Joined '+ddate(u.created_at)+' \u00b7 Last active '+ago(u.last_active)+(u.last_session?' \u00b7 Last session '+ddate(u.last_session+"T12:00:00"):'')+'</div><div class="ct"><span><b>'+(+u.sessions||0)+'</b>sessions</span><span><b>'+hrs+'</b>hours</span><span>'+(u.age_confirmed?"21+ confirmed":"21+ not confirmed")+'</span></div>'+acts+'</div>'}).join("")||'<div class="ur"><div class="dt">No accounts match.</div></div>';
+}
+$("adq").addEventListener("input",function(){if(AU.length)drawAdmin()});
+document.addEventListener("click",async function(e){
+  var f=e.target.closest("[data-af]");
+  if(f){AF=f.dataset.af;document.querySelectorAll("#adf button").forEach(function(x){x.classList.toggle("on",x===f)});drawAdmin();return}
+  var b=e.target.closest("[data-ad]");if(!b)return;
+  var k=b.dataset.ad,id=b.dataset.u,u=AU.find(function(x){return x.id===id})||{},em=u.email||"this account",r;
+  if(k==="admin"&&!confirm("Make "+em+" an admin? They\u2019ll see this dashboard and can manage accounts."))return;
+  if(k==="disable"&&!confirm("Disable "+em+"? They\u2019ll be signed out and can\u2019t sign in until you enable them."))return;
+  if(k==="delete"&&!confirm("Delete "+em+" and all of their sessions? This can\u2019t be undone."))return;
+  b.disabled=true;
+  if(k==="admin"||k==="unadmin")r=await sb.rpc("admin_set_admin",{p_user:id,p_on:k==="admin"});
+  else if(k==="disable"||k==="enable")r=await sb.rpc("admin_set_disabled",{p_user:id,p_on:k==="disable"});
+  else if(k==="delete")r=await sb.rpc("admin_delete_user",{p_user:id});
+  b.disabled=false;
+  if(r&&r.error){$("adt").textContent=r.error.message||"That didn\u2019t go through.";return}
+  loadAdmin();
+});
+// ───── Sign-in screen ─────
+var AM={
+  in:{h:"Sign in",s:"Your sessions are private to your account.",b:"Sign in",m:"Create an account",pw:1,em:1,fg:1,ac:"current-password"},
+  up:{h:"Create your account",s:"Free, with no subscriptions. Your sessions are private to you.",b:"Create account",m:"I already have an account",pw:1,em:1,fg:0,ac:"new-password"},
+  forgot:{h:"Reset your password",s:"We\u2019ll email you a link to choose a new one.",b:"Send reset link",m:"Back to sign in",pw:0,em:1,fg:0},
+  reset:{h:"Choose a new password",s:"At least 8 characters.",b:"Save new password",m:"",pw:1,em:0,fg:0,ac:"new-password"}};
+function setMode(m,keep){amode=m;var c=AM[m];$("ah").textContent=c.h;$("as").textContent=c.s;$("ago").textContent=c.b;$("amode").textContent=c.m;$("amode").hidden=!c.m;$("afg").hidden=!c.fg;$("apww").hidden=!c.pw;$("aemw").hidden=!c.em;if(c.ac)$("apw").autocomplete=c.ac;$("agew").hidden=m!=="up";if(!keep)$("amsg2").textContent=""}
+async function authGo(){
+  var em=$("aem").value.trim(),pw=$("apw").value,m=$("amsg2"),btn=$("ago"),r;m.textContent="";
+  if(amode!=="reset"&&!/^\S+@\S+\.\S+$/.test(em)){m.textContent="Enter your email address.";return}
+  if(amode==="in"&&!pw){m.textContent="Enter your password.";return}
+  if(amode==="up"&&!$("age").checked){m.textContent="OddsNotLuck is for adults 21 and over. Check the box to continue.";return}
+  if((amode==="up"||amode==="reset")&&pw.length<8){m.textContent="Use at least 8 characters for your password.";return}
+  btn.disabled=true;
+  try{
+    if(amode==="in"){r=await sb.auth.signInWithPassword({email:em,password:pw});if(r.error){var e=r.error.message||"";m.textContent=/invalid login/i.test(e)?"That email and password don\u2019t match.":/not confirmed/i.test(e)?"Confirm your email first: open the link we sent you.":e}}
+    else if(amode==="up"){r=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin,data:{age_confirmed:true}}});if(r.error)m.textContent=r.error.message;else if(!r.data.session){setMode("in");m.textContent="Check your email for a link to confirm your account, then sign in."}}
+    else if(amode==="forgot"){r=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin});m.textContent=r.error?r.error.message:"If that email has an account, a reset link is on its way."}
+    else if(amode==="reset"){r=await sb.auth.updateUser({password:pw});if(r.error)m.textContent=r.error.message;else{RECOV=false;$("apw").value="";history.replaceState(null,"",location.pathname);var s2=(await sb.auth.getSession()).data.session;UID=null;boot(s2)}}
+  }catch(x){m.textContent="Couldn\u2019t reach the server. Check your connection and try again."}
+  finally{btn.disabled=false}
+}
+document.addEventListener("click",function(e){var b=e.target.closest("[data-au]");if(!b)return;var k=b.dataset.au;
+  if(k==="mode")setMode(amode==="in"?"up":"in");
+  else if(k==="forgot")setMode("forgot");
+  else if(k==="out")sb.auth.signOut().then(signedOut,signedOut);
+  else if(k==="go")authGo();
+  else if(k==="admr")loadAdmin();
+  else if(k==="admopen"){goTab("adm");window.scrollTo(0,0);loadAdmin()}
+  else if(k==="admback"){var n=document.querySelector('.bn [data-nv="set"]');if(n)n.click();else goTab("me")}
+  else if(k==="age")sb.rpc("confirm_age").then(function(r){if(!r.error)$("agec").hidden=true})});
+["aem","apw"].forEach(function(i){$(i).addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();authGo()}})});
+setMode("in");
+sb.auth.onAuthStateChange(function(ev,sess){
+  if(sess&&sess.user&&ev!=="PASSWORD_RECOVERY"&&!RECOV)document.body.classList.remove("out");
+  unboot();
+  if(ev==="PASSWORD_RECOVERY"){RECOV=true;document.body.classList.add("out");setMode("reset");return}
+  if(ev==="SIGNED_OUT"){setTimeout(signedOut,0);return}
+  setTimeout(function(){boot(sess)},0)});
+</script>
+</body>
+</html>
