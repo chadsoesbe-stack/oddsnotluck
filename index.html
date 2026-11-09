@@ -195,9 +195,18 @@ body.out main,body.out .bn{display:none}
 body:not(.out) #auth{display:none}
 .acct{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:12.5px;color:var(--mut)}
 .acct .lnk{padding:0}
+.rbtn{display:flex;gap:8px}.rbtn button{flex:1}
+#pdfb:disabled{opacity:.6}
+#splash{display:none}
+body.boot #auth,body.boot main,body.boot .bn{display:none}
+body.boot #splash{display:flex;min-height:100vh;min-height:100dvh;align-items:center;justify-content:center}
+body.boot #splash .mk{width:64px;height:64px;border-radius:16px;font-size:36px;animation:sp 1.4s ease-in-out infinite}
+@keyframes sp{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){body.boot #splash .mk{animation:none}}
 </style>
 </head>
-<body class="out">
+<body class="out boot">
+<div id="splash" aria-label="Loading"><span class="mk" aria-hidden="true">21</span></div>
 <section id="auth" aria-label="Sign in">
   <div class="brand"><span class="mk" aria-hidden="true">21</span><h1 class="wm"><span class="a">Odds</span><span class="n">Not</span>Luck</h1></div>
   <p class="tag">Results based on <span class="a">odds</span> <span class="n">not</span> luck</p>
@@ -280,8 +289,8 @@ body:not(.out) #auth{display:none}
 <section id="rep" hidden>
   <div class="rh" style="margin-top:6px"><h2>Yearly report</h2><select id="yr" style="width:auto"></select></div>
   <div class="gl" id="rp"></div>
-  <p class="sub" style="margin-top:10px">A record of the sessions you logged, not tax advice. W-2G jackpots and poker tournaments are listed separately because different rules apply. Rules for deducting gambling losses changed in 2026, so check with a tax professional.</p>
-  <button class="p" data-a="csv" id="csvb" hidden>Download CSV for this year</button><p class="note" id="cm"></p>
+  <p class="sub" style="margin-top:10px" id="rnote"></p>
+  <div class="rbtn"><button class="p" data-a="pdf" id="pdfb">Download PDF</button><button class="p2" data-a="csv" id="csvb" hidden>Download CSV</button></div><p class="note" id="cm"></p>
   <h2>W-2G jackpots</h2>
   <div class="gl" id="wl"></div>
 </section>
@@ -371,7 +380,8 @@ function drawReport(){var ys=years(),cur=$("yr").value||ys[0];$("yr").innerHTML=
   var L=S.filter(function(s){return(s.date||"").slice(0,4)===cur}),w=0,l=0,tw=0,tl=0,jn=0,ja=0,jw=0;
   L.forEach(function(s){var n=net(s);if(ginfo(s.game)[2]==="pt"){if(n>0)tw+=n;else tl-=n}else{if(n>0)w+=n;else l-=n}if(s.w2g){jn++;ja+=nz(s.w2g.amt);jw+=nz(s.w2g.wh)}});
   var row=function(a,b,c){return'<div class="r"><div class="l">'+a+'</div><b class="'+(c||"")+'">'+b+"</b></div>"};
-  $("rp").innerHTML=row("Sessions logged",L.length)+row("Winning sessions, total won",plain(w),"ok")+row("Losing sessions, total lost",plain(l),"no")+row("Poker tournaments, won",plain(tw),"ok")+row("Poker tournaments, lost (fees and rebuys)",plain(tl),"no")+row("Net for the year",money(w-l+tw-tl),cls(w-l+tw-tl))+row("W-2G forms",jn)+row("W-2G amounts",plain(ja))+row("Tax withheld",plain(jw));
+  $("rp").innerHTML=row("Sessions logged",L.length)+row("Winning sessions, total won",plain(w),"ok")+row("Losing sessions, total lost",plain(l),"no")+row("Poker tournaments, won",plain(tw),"ok")+row("Poker tournaments, lost (fees and rebuys)",plain(tl),"no")+row("Net for the year",money(w-l+tw-tl),cls(w-l+tw-tl))+row("W-2G forms",jn)+row("W-2G amounts",plain(ja))+row("Tax withheld",plain(jw))+(+cur>=2026&&(l+tl)>0?row("Losses you could deduct if you itemize",plain(Math.min(0.9*(l+tl),w+tw))):"");
+  $("rnote").textContent="A record of the sessions you logged, not tax advice. W-2G jackpots and poker tournaments are listed separately because different rules apply."+(+cur>=2026?" For 2026, casinos issue a W-2G for slot, video poker and keno wins of $2,000 or more and for poker tournament wins over $5,000 net. If you itemize, you can deduct 90% of your gambling losses, up to your winnings.":"")+" Check with a tax professional.";
   var J=L.filter(function(s){return s.w2g});$("wl").innerHTML=J.length?J.map(function(s){return'<div class="r"><div class="l">'+esc(s.game)+"<small>"+esc(s.date||"")+(ven(s)?", "+esc(ven(s)):"")+", withheld "+plain(nz(s.w2g.wh))+'</small></div><b>'+plain(nz(s.w2g.amt))+"</b></div>"}).join(""):'<p class="sub" style="padding:14px;margin:0">No W-2G jackpots logged this year.</p>';
   $("csvb").hidden=!DL}
 function drawOdds(){if($("cg")&&!$("cg").options.length){$("cg").innerHTML=Object.keys(GD).filter(function(g){return GD[g].e!=null&&!GD[g].wag}).map(function(g){return"<option"+(g==="Blackjack"?" selected":"")+">"+esc(g)+"</option>"}).join("");drawCalc()}var all=[];ODDS.forEach(function(o){o.b.forEach(function(b){all.push({g:o.g,b:b})})});all.sort(function(a,b){return a.b[1]-b.b[1]});
@@ -415,9 +425,9 @@ document.addEventListener("click",function(e){var b=e.target.closest("button");i
   if(b.dataset.a2==="ldr"){goTab("me");$("resh").scrollIntoView({behavior:"smooth",block:"start"});return}
   if(b.dataset.a2==="fab"){if(SET.active){if(SET.active.pausedAt)resumeT();else pauseT();return}if(B){SET.active={game:$("lg")?$("lg").value:"Blackjack",venue:$("lvv")?$("lvv").value.trim():"",avg:$("lvb")?num($("lvb").value):null,startedAt:Date.now(),pausedMs:0,pausedAt:null};saveSet();drawLive()}goTab("me");var lvc=$("live");lvc.scrollIntoView({behavior:"smooth",block:"center"});var c=lvc.querySelector(".lv");if(c){c.classList.remove("pulse");void c.offsetWidth;c.classList.add("pulse")}return}
   if(b.dataset.b){bv=b.dataset.b;document.querySelectorAll("#bseg button").forEach(function(x){x.className=x.dataset.b===bv?"on":""});drawBreak();return}
-  if(b.dataset.del&&SC){SC.doc(b.dataset.del).delete().catch(function(){$("msg").textContent="Could not remove that session."});return}
+  if(b.dataset.del&&SC){if(!confirm("Remove this session? This can\u2019t be undone."))return;SC.doc(b.dataset.del).delete().catch(function(){$("msg").textContent="Could not remove that session."});return}
   var a=b.dataset.a;if(!a)return;
-  if(!B&&a!=="csv"){$("msg").textContent="Sign in to save your sessions.";return}
+  if(!B&&a!=="csv"&&a!=="pdf"){$("msg").textContent="Sign in to save your sessions.";return}
   if(a==="start"){SET.active={game:$("lg").value,venue:$("lvv").value.trim(),avg:num($("lvb").value),startedAt:Date.now(),pausedMs:0,pausedAt:null};saveSet();document.activeElement.blur();drawLive();return}
   if(a==="outm"){var of=$("outf");of.hidden=!of.hidden;$("addf").hidden=true;if(!of.hidden)$("om").focus();return}
   if(a==="outsave"){var oa=num($("om").value);if(oa===null||oa<=0){$("omsg").textContent="Enter the amount you took out.";return}SET.deposits=(SET.deposits||[]).concat([{cat:"All",amt:-oa,kind:"out",date:new Date().toLocaleDateString("en-CA"),ts:Date.now()}]);saveSet();$("om").value="";$("omsg").textContent="";$("outf").hidden=true;document.activeElement.blur();render();return}
@@ -435,13 +445,60 @@ document.addEventListener("click",function(e){var b=e.target.closest("button");i
     if(d.inn===null||d.out===null||d.hrs===null||(d.hrs<=0&&k!=="sb")||(k==="pt"&&!d.inn)){$("fm2").textContent=k==="pt"?"Add the entry fee and hours played.":"Add the money in, money out and hours played.";return}
     SC.doc("s"+Date.now()).set(d).then(function(){["fb","fo","fh","ft","fe","fr","fw","fa","fm","fdn","fst","fwa","fww","fra","fc","fsa"].forEach(function(i){$(i).value=""});$("fj").checked=false;showFields();$("fm2").textContent="";$("logf").open=false}).catch(function(){$("fm2").textContent="Could not save. Try again."});return}
   if(a==="set"){SET.skill=$("ssk").value;SET.start=num($("sst").value);SET.bank=null;SET.budget=num($("lb").value);SET.hours=num($("lh").value);var pr=saveSet();if(pr)pr.then(function(){$("sm").textContent="Settings saved."});render();return}
+  if(a==="pdf"){makePDF();return}
   if(a==="csv"&&DL){var y=$("yr").value,rows=[["date","game","venue","hours","money_in","money_out","tips","net","w2g_amount","w2g_withheld"]];sorted().filter(function(s){return(s.date||"").slice(0,4)===y}).forEach(function(s){rows.push([s.date||"",s.game,ven(s),nz(s.hrs),nz(s.inn),nz(s.out),nz(s.tips),net(s),s.w2g?nz(s.w2g.amt):"",s.w2g?nz(s.w2g.wh):""])});
     var csv=rows.map(function(r){return r.map(function(c){c=String(c);return/[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(",")}).join("\n");
     DL.save({filename:"oddsnotluck-"+y+".csv",data:csv}).then(function(){$("cm").textContent=""}).catch(function(err){if(err&&err.code==="unavailable")$("csvb").hidden=true;else if(!(err&&err.code==="declined"))$("cm").textContent="The download didn\u2019t go through."});return}
 });
 $("fd").value=new Date().toLocaleDateString("en-CA");
 drawOdds();render();
+// ───── Yearly report as PDF ─────
+function loadJsPDF(){return window.jspdf?Promise.resolve():new Promise(function(ok,no){var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+function pdfTxt(t){return String(t==null?"":t).replace(/\u2212/g,"-").replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,"-").replace(/[^\x00-\xFF]/g,"")}
+async function makePDF(){
+  var y=$("yr").value,btn=$("pdfb");$("cm").textContent="";btn.disabled=true;
+  try{await loadJsPDF()}catch(e){$("cm").textContent="Couldn\u2019t load the PDF maker. Check your connection and try again.";btn.disabled=false;return}
+  try{
+  var J=window.jspdf.jsPDF,doc=new J({unit:"pt",format:"letter"}),W=612,H=792,M=54,Y=M;
+  var ink=[26,20,48],mut=[97,90,120],acc=[106,46,232],ok=[15,138,95],no=[194,65,45],rule=[221,216,234];
+  function col(c){doc.setTextColor(c[0],c[1],c[2])}
+  function foot(){doc.setFont("helvetica","normal");doc.setFontSize(8);col(mut);doc.text(pdfTxt("OddsNotLuck yearly report "+y+". A record of logged sessions, not tax advice. Page "+doc.getNumberOfPages()),M,H-30)}
+  function need(h){if(Y+h>H-56){foot();doc.addPage();Y=M}}
+  function hline(){doc.setDrawColor(rule[0],rule[1],rule[2]);doc.setLineWidth(.6);doc.line(M,Y,W-M,Y)}
+  function head(t){need(40);Y+=14;doc.setFont("helvetica","bolditalic");doc.setFontSize(15);col(ink);doc.text(pdfTxt(t),M,Y);Y+=6;doc.setDrawColor(acc[0],acc[1],acc[2]);doc.setLineWidth(2);doc.line(M,Y,M+24,Y);Y+=16}
+  // Title
+  doc.setFont("helvetica","bolditalic");doc.setFontSize(24);col(acc);doc.text("Odds",M,Y+10);var x=M+doc.getTextWidth("Odds");col([150,140,180]);doc.text("Not",x,Y+10);x+=doc.getTextWidth("Not");col(ink);doc.text("Luck",x,Y+10);
+  Y+=34;doc.setFont("helvetica","bold");doc.setFontSize(13);col(ink);doc.text("Yearly report, "+y,M,Y);
+  Y+=15;doc.setFont("helvetica","normal");doc.setFontSize(9);col(mut);doc.text(pdfTxt("Created "+new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})+(UID&&$("aemail").textContent?" for "+$("aemail").textContent:"")),M,Y);Y+=10;
+  // Summary rows
+  head("Summary");
+  document.querySelectorAll("#rp .r").forEach(function(r){var l=r.querySelector(".l"),b=r.querySelector("b");need(22);doc.setFont("helvetica","normal");doc.setFontSize(10.5);col(ink);doc.text(pdfTxt(l?l.firstChild.textContent:""),M,Y+4);doc.setFont("helvetica","bold");col(b&&b.classList.contains("ok")?ok:b&&b.classList.contains("no")?no:ink);doc.text(pdfTxt(b?b.textContent:""),W-M,Y+4,{align:"right"});Y+=11;hline();Y+=11});
+  // W-2G
+  var JK=S.filter(function(s){return(s.date||"").slice(0,4)===y&&s.w2g}).sort(function(a,b){return(a.date||"")<(b.date||"")?-1:1});
+  head("W-2G jackpots");
+  if(!JK.length){doc.setFont("helvetica","normal");doc.setFontSize(10);col(mut);doc.text("None logged this year.",M,Y+4);Y+=18}
+  JK.forEach(function(s){need(22);doc.setFont("helvetica","normal");doc.setFontSize(10.5);col(ink);doc.text(pdfTxt((s.date||"")+"  "+s.game+(ven(s)?", "+ven(s):"")),M,Y+4);doc.setFont("helvetica","bold");doc.text(pdfTxt(plain(nz(s.w2g.amt))+"  (withheld "+plain(nz(s.w2g.wh))+")"),W-M,Y+4,{align:"right"});Y+=11;hline();Y+=11});
+  // Session log
+  var L=sorted().filter(function(s){return(s.date||"").slice(0,4)===y});
+  head("Session log ("+L.length+")");
+  var C=[["Date",M,"left"],["Game",M+62,"left"],["Venue",M+188,"left"],["Hours",M+338,"right"],["In",M+392,"right"],["Out",M+448,"right"],["Net",W-M,"right"]];
+  function th(){doc.setFont("helvetica","bold");doc.setFontSize(8);col(mut);C.forEach(function(c){doc.text(c[0].toUpperCase(),c[1],Y,{align:c[2]})});Y+=6;hline();Y+=12}
+  th();
+  L.forEach(function(s){if(Y+16>H-56){foot();doc.addPage();Y=M;th()}var n=net(s),v=[s.date||"",s.game,ven(s),String(Math.round(nz(s.hrs)*100)/100),plain(nz(s.inn)),plain(nz(s.out)),money(n)];doc.setFontSize(9.5);C.forEach(function(c,i){doc.setFont("helvetica",i===6?"bold":"normal");col(i===6?(n>0?ok:n<0?no:ink):ink);var t=pdfTxt(v[i]);var mw=i===1?120:i===2?140:999;while(doc.getTextWidth(t)>mw&&t.length>1)t=t.slice(0,-2)+"\u2026";doc.text(pdfTxt(t).replace(/\u2026/g,"..."),c[1],Y,{align:c[2]})});Y+=8;hline();Y+=12});
+  if(!L.length){doc.setFont("helvetica","normal");doc.setFontSize(10);col(mut);doc.text("No sessions logged this year.",M,Y);Y+=14}
+  // Notes
+  need(70);Y+=10;doc.setFont("helvetica","normal");doc.setFontSize(8.5);col(mut);
+  var note=+y>=2026?"For 2026, casinos issue a W-2G for slot, video poker, keno and bingo wins of $2,000 or more and for poker tournament wins over $5,000 net. All gambling winnings are taxable, with or without a W-2G. If you itemize, you can deduct 90% of gambling losses, up to your winnings. ":"";
+  doc.text(doc.splitTextToSize(pdfTxt(note+"Net is money out minus money in and tips. This is a record of the sessions logged in OddsNotLuck, not tax advice; check with a tax professional."),W-2*M),M,Y);
+  foot();
+  doc.save("oddsnotluck-"+y+".pdf");
+  }catch(e){$("cm").textContent="The PDF didn\u2019t go through. Try again."}
+  btn.disabled=false
+}
 // ───── Supabase: sign-in and data (replaces the claude.ai database) ─────
+if(typeof supabase==="undefined"){document.body.classList.remove("boot");document.getElementById("amsg2").textContent="Couldn\u2019t load sign-in. Check your connection and reload.";throw new Error("Supabase did not load")}
+function unboot(){document.body.classList.remove("boot")}
+setTimeout(unboot,6000);
 var SB_URL="https://mldbvglyqejgyfnntxqq.supabase.co",SB_KEY="sb_publishable_G_WXAetu0jSFLinre4BaMQ_Lb1-R__j";
 var sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 var UID=null,CH=null,amode="in",RECOV=false,BOOTING=false;
@@ -518,6 +575,8 @@ document.addEventListener("click",function(e){var b=e.target.closest("[data-au]"
 ["aem","apw"].forEach(function(i){$(i).addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();authGo()}})});
 setMode("in");
 sb.auth.onAuthStateChange(function(ev,sess){
+  if(sess&&sess.user&&ev!=="PASSWORD_RECOVERY"&&!RECOV)document.body.classList.remove("out");
+  unboot();
   if(ev==="PASSWORD_RECOVERY"){RECOV=true;document.body.classList.add("out");setMode("reset");return}
   if(ev==="SIGNED_OUT"){setTimeout(signedOut,0);return}
   setTimeout(function(){boot(sess)},0)});
