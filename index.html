@@ -195,6 +195,15 @@ body.out main,body.out .bn{display:none}
 body:not(.out) #auth{display:none}
 .acct{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:12.5px;color:var(--mut)}
 .acct .lnk{padding:0}
+.adm{grid-template-columns:1fr 1fr;margin:10px 0 8px}
+.adm .lc{cursor:default}
+.adm .lc:nth-child(3){border-left:0}
+.adm .lc:nth-child(n+3){border-top:1px solid var(--bd)}
+#adl .r:last-child{border-bottom:0}
+#adl .r b small{display:block;font:500 10.5px/1 -apple-system,system-ui,sans-serif;color:var(--mut);margin-top:4px}
+#adl .l{min-width:0;overflow-wrap:anywhere}
+.tg{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.3px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:1px;background:var(--chip)}
+.tg.a{color:var(--amb)}.tg.w{color:var(--wa)}.tg.x{color:var(--no)}
 .rbtn{display:flex;gap:8px}.rbtn button{flex:1}
 #pdfb:disabled{opacity:.6}
 #splash{display:none}
@@ -283,6 +292,11 @@ body.boot #splash .mk{width:64px;height:64px;border-radius:16px;font-size:36px;a
     </div>
     <button class="p" data-a="set">Save settings</button><p class="note" id="sm"></p>
     <div class="acct"><span id="aemail"></span><button class="lnk" data-au="out">Sign out</button></div>
+  </details>
+  <details id="admf" hidden><summary>Admin dashboard</summary>
+    <div class="ldr adm" id="ads"></div>
+    <div class="gl" id="adl"></div>
+    <div class="acct"><span id="adt"></span><button class="lnk" data-au="admr">Refresh</button></div>
   </details>
 </section>
 
@@ -533,7 +547,7 @@ async function boot(sess){
     if(!row&&!r.error){var ins=await sb.from("user_settings").insert({user_id:UID}).select().single();row=ins.data}
     if(!row){$("msg").textContent="Could not load your settings. Check your connection and reopen the app.";row={}}
     var d=await sb.from("deposits").select("*").order("added_on").order("ts");
-    SET=fromSet(row,(d.data||[]).map(fromDep));B=Bimpl;SC=SCimpl;fillSet();render();
+    SET=fromSet(row,(d.data||[]).map(fromDep));B=Bimpl;SC=SCimpl;fillSet();render();checkAdmin();
     await loadSessions();
     if(CH)sb.removeChannel(CH);
     var f="user_id=eq."+UID;
@@ -544,8 +558,30 @@ async function boot(sess){
       .subscribe();
   }finally{BOOTING=false}
 }
-function signedOut(){UID=null;B=null;SC=null;S=[];SET={};if(CH){sb.removeChannel(CH);CH=null}document.body.classList.add("out");setMode("in");render()}
+function signedOut(){$("admf").hidden=true;$("admf").open=false;UID=null;B=null;SC=null;S=[];SET={};if(CH){sb.removeChannel(CH);CH=null}document.body.classList.add("out");setMode("in");render()}
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&UID){loadSet();loadDeps();loadSessions()}});
+
+// ───── Admin dashboard (visible only to admins; the database checks too) ─────
+function ago(t){if(!t)return"never";var m=Math.round((Date.now()-new Date(t))/60000);if(m<2)return"just now";if(m<60)return m+"m ago";var h=Math.round(m/60);if(h<24)return h+"h ago";var d=Math.round(h/24);if(d<31)return d+"d ago";return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
+function ddate(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
+async function checkAdmin(){var r=await sb.rpc("is_admin");$("admf").hidden=!(r&&r.data===true);if($("admf").hidden)$("admf").open=false}
+async function loadAdmin(){
+  $("adt").textContent="Loading\u2026";
+  var r=await sb.rpc("admin_users");
+  if(r.error){$("adt").textContent="Couldn\u2019t load accounts.";return}
+  var U=r.data||[],wk=Date.now()-7*864e5,
+      nw=U.filter(function(u){return new Date(u.created_at)>wk}).length,
+      ac=U.filter(function(u){return u.last_active&&new Date(u.last_active)>wk}).length,
+      ss=U.reduce(function(a,u){return a+(+u.sessions||0)},0);
+  function cell(l,v,e){return'<div class="lc"><span>'+l+'</span><b>'+v+'</b>'+(e?'<em>'+e+'</em>':'<em></em>')+'</div>'}
+  $("ads").innerHTML=cell("Accounts",U.length)+cell("New this week",nw)+cell("Active this week",ac)+cell("Sessions logged",ss.toLocaleString("en-US"));
+  $("adl").innerHTML=U.map(function(u){
+    var tags=(u.is_admin?'<span class="tg a">Admin</span>':'')+(!u.confirmed?'<span class="tg w">Unconfirmed</span>':'')+(u.disabled?'<span class="tg x">Disabled</span>':'');
+    var det="Joined "+ddate(u.created_at)+", active "+ago(u.last_active)+(u.last_session?", last session "+ddate(u.last_session+"T12:00:00"):"")+(+u.deposits?", "+u.deposits+" bankroll change"+(u.deposits==1?"":"s"):"");
+    return'<div class="r"><div class="l">'+esc(u.email)+tags+'<small>'+esc(det)+'</small></div><b>'+(+u.sessions||0)+'<small>sessions</small></b></div>'}).join("")||'<div class="r"><div class="l">No accounts yet.</div></div>';
+  $("adt").textContent="Updated "+new Date().toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+}
+$("admf").addEventListener("toggle",function(){if($("admf").open)loadAdmin()});
 // ───── Sign-in screen ─────
 var AM={
   in:{h:"Sign in",s:"Your sessions are private to your account.",b:"Sign in",m:"Create an account",pw:1,em:1,fg:1,ac:"current-password"},
@@ -571,7 +607,8 @@ document.addEventListener("click",function(e){var b=e.target.closest("[data-au]"
   if(k==="mode")setMode(amode==="in"?"up":"in");
   else if(k==="forgot")setMode("forgot");
   else if(k==="out")sb.auth.signOut().then(signedOut,signedOut);
-  else if(k==="go")authGo()});
+  else if(k==="go")authGo();
+  else if(k==="admr")loadAdmin()});
 ["aem","apw"].forEach(function(i){$(i).addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();authGo()}})});
 setMode("in");
 sb.auth.onAuthStateChange(function(ev,sess){
